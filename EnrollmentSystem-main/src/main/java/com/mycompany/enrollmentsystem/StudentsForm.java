@@ -20,7 +20,7 @@ String sgender;
 String syrlvl;
 
     public void showRecords(){
-    DefaultTableModel tblmodel = (DefaultTableModel) studTable.getModel();
+    DefaultTableModel tblmodel = (DefaultTableModel) subjTable.getModel();
     tblmodel.setRowCount(0);
     EnrollmentSystem b = new EnrollmentSystem();
     b.DBConnect();
@@ -82,7 +82,7 @@ String syrlvl;
     private void initComponents() {
 
         jScrollPane2 = new javax.swing.JScrollPane();
-        studTable = new javax.swing.JTable();
+        subjTable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         studyrlvl = new javax.swing.JTextField();
@@ -102,6 +102,9 @@ String syrlvl;
         deleteBtn = new javax.swing.JButton();
         saveBtn = new javax.swing.JButton();
         editBtn = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        studTable1 = new javax.swing.JTable();
+        jLabel9 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -109,23 +112,23 @@ String syrlvl;
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        studTable.setModel(new javax.swing.table.DefaultTableModel(
+        subjTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "ID", "Name", "Address", "Course", "Gender", "Year Level"
+                "SubjID", "SubjCode", "SubjDesc", "SubjUnits", "SubjDesc"
             }
         ));
-        studTable.addMouseListener(new java.awt.event.MouseAdapter() {
+        subjTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                studTableMouseClicked(evt);
+                subjTableMouseClicked(evt);
             }
         });
-        jScrollPane2.setViewportView(studTable);
+        jScrollPane2.setViewportView(subjTable);
 
         jLabel1.setText("STUDENT INFORMATION SYSTEM");
 
@@ -273,6 +276,29 @@ String syrlvl;
                 .addContainerGap(7, Short.MAX_VALUE))
         );
 
+        studTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "ID", "Name", "Address", "Course", "Gender", "Year Level"
+            }
+        ));
+        studTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                studTable1MouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(studTable1);
+        if (studTable1.getColumnModel().getColumnCount() > 0) {
+            studTable1.getColumnModel().getColumn(5).setHeaderValue("Year Level");
+        }
+
+        jLabel9.setText("Enrolled Subjects");
+
         jMenu1.setText("Open");
 
         jMenuItem1.setText("Teachers");
@@ -296,12 +322,15 @@ String syrlvl;
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(234, 234, 234)
                         .addComponent(jLabel1)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(65, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -309,10 +338,17 @@ String syrlvl;
                 .addGap(19, 19, 19)
                 .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(80, 80, 80))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(99, 99, 99))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27))))
         );
 
         pack();
@@ -370,29 +406,29 @@ String syrlvl;
 
     }//GEN-LAST:event_deleteBtnMousePressed
 
-    private void studTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_studTableMouseClicked
-       int selectedRow = studTable.getSelectedRow();
+    private void subjTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_subjTableMouseClicked
+       int selectedRow = subjTable.getSelectedRow();
        
        if (selectedRow < 0) return; 
 
-        stdid = (String) studTable.getValueAt(selectedRow, 0);
+        stdid = (String) subjTable.getValueAt(selectedRow, 0);
         studid.setText(stdid);
 
-        sname = (String) studTable.getValueAt(selectedRow, 1);
+        sname = (String) subjTable.getValueAt(selectedRow, 1);
         studname.setText(sname);
 
-        sadd = (String) studTable.getValueAt(selectedRow, 2);
+        sadd = (String) subjTable.getValueAt(selectedRow, 2);
         studadd.setText(sadd);
 
-        scourse = (String) studTable.getValueAt(selectedRow, 3);
+        scourse = (String) subjTable.getValueAt(selectedRow, 3);
         studcrs.setText(scourse);
 
-        sgender = (String) studTable.getValueAt(selectedRow, 4);
+        sgender = (String) subjTable.getValueAt(selectedRow, 4);
         studgender.setText(sgender);
         
-        syrlvl = (String) studTable.getValueAt(selectedRow, 5);
+        syrlvl = (String) subjTable.getValueAt(selectedRow, 5);
         studyrlvl.setText(syrlvl);
-    }//GEN-LAST:event_studTableMouseClicked
+    }//GEN-LAST:event_subjTableMouseClicked
 
     private void editBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_editBtnMouseClicked
         
@@ -432,6 +468,10 @@ String syrlvl;
         // TODO add your handling code here:
     }//GEN-LAST:event_editBtnActionPerformed
 
+    private void studTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_studTable1MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_studTable1MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -467,6 +507,7 @@ String syrlvl;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
@@ -474,14 +515,16 @@ String syrlvl;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JButton saveBtn;
     private javax.swing.JTextField search;
-    private javax.swing.JTable studTable;
+    private javax.swing.JTable studTable1;
     private javax.swing.JTextField studadd;
     private javax.swing.JTextField studcrs;
     private javax.swing.JTextField studgender;
     private javax.swing.JTextField studid;
     private javax.swing.JTextField studname;
     private javax.swing.JTextField studyrlvl;
+    private javax.swing.JTable subjTable;
     // End of variables declaration//GEN-END:variables
 }
