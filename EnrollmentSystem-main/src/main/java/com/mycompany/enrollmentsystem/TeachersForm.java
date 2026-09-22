@@ -16,9 +16,10 @@ public class TeachersForm extends javax.swing.JFrame {
     String tdept;
     String tcontact;
     String tstatus;
+    String selectedAssignedSubjId; 
     
             public void showRecords(){
-    DefaultTableModel tblmodel = (DefaultTableModel) teachTable.getModel();
+    DefaultTableModel tblmodel = (DefaultTableModel) teachTable2.getModel();
     tblmodel.setRowCount(0);
     EnrollmentSystem b = new EnrollmentSystem();
     b.DBConnect();
@@ -29,28 +30,36 @@ public class TeachersForm extends javax.swing.JFrame {
     }
     
     try{
-        String query = "select * from teachers where concat(teachid, teachname, teachadd, teachdept, teachcontact, teachstatus) like ?";
-        java.sql.PreparedStatement ps = b.con.prepareStatement(query);
-        ps.setString(1, "%" + searchText + "%");
-        b.rs = ps.executeQuery();
-        System.out.println("Success with sql!");  
-        
-        while (b.rs.next()){
-            String i = b.rs.getString("teachid");
-            String c = b.rs.getString("teachname");
-            String a = b.rs.getString("teachadd");
-            String d = b.rs.getString("teachdept");
-            String t = b.rs.getString("teachcontact");
-            String g = b.rs.getString("teachstatus");
-            String[] items = {i,c,a,d,t,g};
-            tblmodel.addRow(items);
-        }
-    }catch (Exception ex){
+    String query = "select * from teachers where concat(tid, tname, tadd, tdept, tcontact, tstatus) like ?";
+    java.sql.PreparedStatement ps = b.con.prepareStatement(query);
+    ps.setString(1, "%" + searchText + "%");
+    b.rs = ps.executeQuery();
+    System.out.println("Success with sql!");  
+    
+    while (b.rs.next()){
+        String i = b.rs.getString("tid");
+        String c = b.rs.getString("tname");
+        String a = b.rs.getString("tadd");
+        String d = b.rs.getString("tdept");
+        String t = b.rs.getString("tcontact");
+        String g = b.rs.getString("tstatus");
+        String[] items = {i,c,a,d,t,g};
+        tblmodel.addRow(items);
+    }
+}catch (Exception ex){
         System.out.print("not Success with sql!");
          ex.printStackTrace();
     }
 }
+public void showAssignedSubjects(int tid) {
+    DefaultTableModel tblmodel = (DefaultTableModel) assignTable.getModel();
+    tblmodel.setRowCount(0);
 
+    Assign a = new Assign();
+    for (String[] row : a.subjectsOfTeacher(tid)) {
+        tblmodel.addRow(row);
+    }
+}
 private void clearFields() {
     teachid.setText("");
     teachname.setText("");
@@ -99,8 +108,13 @@ private void clearFields() {
         editBtn = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        jScrollPane3 = new javax.swing.JScrollPane();
+        assignTable = new javax.swing.JTable();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        teachTable2 = new javax.swing.JTable();
+        Assignbutton = new javax.swing.JButton();
+        deletebutton = new javax.swing.JButton();
+        assignlabelt = new javax.swing.JLabel();
 
         teachTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -119,6 +133,11 @@ private void clearFields() {
             }
         });
         jScrollPane2.setViewportView(teachTable);
+        if (teachTable.getColumnModel().getColumnCount() > 0) {
+            teachTable.getColumnModel().getColumn(5).setHeaderValue("Status");
+        }
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel2.setText("Teacher ID");
 
@@ -265,32 +284,99 @@ private void clearFields() {
 
         jLabel1.setText("TEACHERS REGISTRATION SYSTEM");
 
+        assignTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Subj ID", "Subj Code", "Subj Desc", "Subj Units", "Subj Sched"
+            }
+        ));
+        assignTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                assignTableMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(assignTable);
+
+        teachTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "ID", "Name", "Address", "Department", "Contact", "Status"
+            }
+        ));
+        teachTable2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                teachTable2MouseClicked(evt);
+            }
+        });
+        jScrollPane4.setViewportView(teachTable2);
+        if (teachTable2.getColumnModel().getColumnCount() > 0) {
+            teachTable2.getColumnModel().getColumn(5).setHeaderValue("Status");
+        }
+
+        Assignbutton.setText("Assign");
+        Assignbutton.addActionListener(this::AssignbuttonActionPerformed);
+
+        deletebutton.setText("Delete");
+        deletebutton.addActionListener(this::deletebuttonActionPerformed);
+
+        assignlabelt.setText("Assign Subject");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(234, 234, 234)
-                        .addComponent(jLabel1)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(Assignbutton)
+                            .addComponent(deletebutton)))
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(assignlabelt, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(40, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(80, 80, 80))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(78, 78, 78)
+                                .addComponent(Assignbutton)
+                                .addGap(18, 18, 18)
+                                .addComponent(deletebutton)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(assignlabelt, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(15, 15, 15)
+                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(38, 38, 38))))))
         );
 
         pack();
@@ -390,6 +476,102 @@ private void clearFields() {
         // TODO add your handling code here:
     }//GEN-LAST:event_searchMouseClicked
 
+    private void assignTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_assignTableMouseClicked
+        // TODO add your handling code here:
+        int selectedRow = assignTable.getSelectedRow();
+
+    if (selectedRow < 0) return;
+
+    selectedAssignedSubjId = (String) assignTable.getValueAt(selectedRow, 0);
+    }//GEN-LAST:event_assignTableMouseClicked
+
+    private void teachTable2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_teachTable2MouseClicked
+        // TODO add your handling code here:                                        
+    int selectedRow = teachTable2.getSelectedRow();
+
+    if (selectedRow < 0) return;
+
+    tid = (String) teachTable2.getValueAt(selectedRow, 0);
+    teachid.setText(tid);
+
+    tname = (String) teachTable2.getValueAt(selectedRow, 1);
+    teachname.setText(tname);
+
+    tadd = (String) teachTable2.getValueAt(selectedRow, 2);
+    teachadd.setText(tadd);
+
+    tdept = (String) teachTable2.getValueAt(selectedRow, 3);
+    teachdept.setText(tdept);
+
+    tcontact = (String) teachTable2.getValueAt(selectedRow, 4);
+    teachcontact.setText(tcontact);
+
+    tstatus = (String) teachTable2.getValueAt(selectedRow, 5);
+    teachstatus.setText(tstatus);
+
+    selectedAssignedSubjId = null;
+    showAssignedSubjects(Integer.parseInt(tid));
+
+    }//GEN-LAST:event_teachTable2MouseClicked
+
+    private void AssignbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AssignbuttonActionPerformed
+        // TODO add your handling code here:
+        if (tid == null || tid.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Select a teacher first.");
+        return;
+    }
+    if (SubjectsForm.selectedSubjId == null || SubjectsForm.selectedSubjId.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Open the Subjects window and select a subject first.");
+        return;
+    }
+
+    int confirm = javax.swing.JOptionPane.showConfirmDialog(
+        this,
+        "Assign Subject ID:" + SubjectsForm.selectedSubjId + " to Teacher ID:" + tid,
+        "Confirm Assignment",
+        javax.swing.JOptionPane.OK_CANCEL_OPTION,
+        javax.swing.JOptionPane.QUESTION_MESSAGE
+    );
+    if (confirm != javax.swing.JOptionPane.OK_OPTION) {
+        return;
+    }
+
+    Assign a = new Assign();
+    boolean ok = a.assign_subject(Integer.parseInt(SubjectsForm.selectedSubjId), Integer.parseInt(tid));
+    if (!ok) {
+        javax.swing.JOptionPane.showMessageDialog(this, "That subject is already assigned to this teacher.");
+    }
+    showAssignedSubjects(Integer.parseInt(tid));
+    }//GEN-LAST:event_AssignbuttonActionPerformed
+
+    private void deletebuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deletebuttonActionPerformed
+        // TODO add your handling code here:
+         if (tid == null || tid.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Select a teacher first.");
+        return;
+    }
+    if (selectedAssignedSubjId == null || selectedAssignedSubjId.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Select a subject from the Assigned Subjects list first.");
+        return;
+    }
+
+    int confirm = javax.swing.JOptionPane.showConfirmDialog(
+        this,
+        "Remove Subject ID:" + selectedAssignedSubjId + " from Teacher ID:" + tid,
+        "Confirm Removal",
+        javax.swing.JOptionPane.OK_CANCEL_OPTION,
+        javax.swing.JOptionPane.QUESTION_MESSAGE
+    );
+    if (confirm != javax.swing.JOptionPane.OK_OPTION) {
+        return;
+    }
+
+    Assign a = new Assign();
+    a.delete_assignment(Integer.parseInt(selectedAssignedSubjId), Integer.parseInt(tid));
+    selectedAssignedSubjId = null;
+    showAssignedSubjects(Integer.parseInt(tid));
+    }//GEN-LAST:event_deletebuttonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -416,7 +598,11 @@ private void clearFields() {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Assignbutton;
+    private javax.swing.JTable assignTable;
+    private javax.swing.JLabel assignlabelt;
     private javax.swing.JButton deleteBtn;
+    private javax.swing.JButton deletebutton;
     private javax.swing.JButton editBtn;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -428,9 +614,12 @@ private void clearFields() {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JButton saveBtn;
     private javax.swing.JTextField search;
     private javax.swing.JTable teachTable;
+    private javax.swing.JTable teachTable2;
     private javax.swing.JTextField teachadd;
     private javax.swing.JTextField teachcontact;
     private javax.swing.JTextField teachdept;

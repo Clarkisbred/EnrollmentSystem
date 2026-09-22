@@ -70,30 +70,59 @@ public class enrolled {
     }
 
     public List<String[]> subjectsOfStudent(int studid) {
-    List<String[]> out = new ArrayList<>();
-    EnrollmentSystem b = new EnrollmentSystem();
-    b.DBConnect();
+        List<String[]> out = new ArrayList<>();
+        EnrollmentSystem b = new EnrollmentSystem();
+        b.DBConnect();
 
-    String query = "SELECT s.subjid, s.subjcode, s.subjdesc, s.subjunits, s.subjsched "
-                 + "FROM enroll e JOIN subjects s ON e.subjid = s.subjid "
-                 + "WHERE e.studid = ?";
-    try {
-        PreparedStatement ps = b.con.prepareStatement(query);
-        ps.setInt(1, studid);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            out.add(new String[]{
-                rs.getString("subjid"),
-                rs.getString("subjcode"),
-                rs.getString("subjdesc"),
-                rs.getString("subjunits"),
-                rs.getString("subjsched")
-            });
+        String query = "SELECT s.subjid, s.subjcode, s.subjdesc, s.subjunits, s.subjsched "
+                     + "FROM enroll e JOIN subjects s ON e.subjid = s.subjid "
+                     + "WHERE e.studid = ?";
+        try {
+            PreparedStatement ps = b.con.prepareStatement(query);
+            ps.setInt(1, studid);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                out.add(new String[]{
+                    rs.getString("subjid"),
+                    rs.getString("subjcode"),
+                    rs.getString("subjdesc"),
+                    rs.getString("subjunits"),
+                    rs.getString("subjsched")
+                });
+            }
+        } catch (Exception e) {
+            System.out.println("Not successful!");
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        System.out.println("Not successful!");
-        e.printStackTrace();
+        return out;
     }
-    return out;
-}
+
+    public List<String[]> studentsOfSubject(int subjid) {
+        List<String[]> out = new ArrayList<>();
+        EnrollmentSystem b = new EnrollmentSystem();
+        b.DBConnect();
+
+        String query = "SELECT s.studid, s.studname, s.studadd, s.studcrs, s.studgender, s.yrlvl "
+                     + "FROM enroll e JOIN students s ON e.studid = s.studid "
+                     + "WHERE e.subjid = ?";
+        try {
+            PreparedStatement ps = b.con.prepareStatement(query);
+            ps.setInt(1, subjid);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                out.add(new String[]{
+                    rs.getString("studid"),
+                    rs.getString("studname"),
+                    rs.getString("studadd"),
+                    rs.getString("studcrs"),
+                    rs.getString("studgender"),
+                    rs.getString("yrlvl")
+                });
+            }
+        } catch (Exception e) {
+            System.out.println("Not successful!");
+            e.printStackTrace();
+        }
+        return out;
+    }
 }

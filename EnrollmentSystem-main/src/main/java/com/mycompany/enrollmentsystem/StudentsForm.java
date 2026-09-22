@@ -18,6 +18,7 @@ String sadd;
 String scourse;
 String sgender;
 String syrlvl;
+String selectedEnrolledSubjId;
 
     public void showRecords(){
     DefaultTableModel tblmodel = (DefaultTableModel) studTable.getModel();
@@ -79,6 +80,7 @@ String syrlvl;
      */
     public StudentsForm() {
         initComponents();
+
     }
 
     /**
@@ -114,8 +116,8 @@ String syrlvl;
         jScrollPane3 = new javax.swing.JScrollPane();
         studTable = new javax.swing.JTable();
         jLabel9 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        Enrollbutton = new javax.swing.JButton();
+        Dropbutton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -307,9 +309,11 @@ String syrlvl;
 
         jLabel9.setText("Enrolled Subjects");
 
-        jButton1.setText("Enroll");
+        Enrollbutton.setText("Enroll");
+        Enrollbutton.addActionListener(this::EnrollbuttonActionPerformed);
 
-        jButton2.setText("Drop");
+        Dropbutton.setText("Drop");
+        Dropbutton.addActionListener(this::DropbuttonActionPerformed);
 
         jMenu1.setText("Open");
 
@@ -342,8 +346,8 @@ String syrlvl;
                             .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1)
-                            .addComponent(jButton2)))
+                            .addComponent(Enrollbutton)
+                            .addComponent(Dropbutton)))
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(47, Short.MAX_VALUE))
         );
@@ -368,9 +372,9 @@ String syrlvl;
                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(28, 28, 28))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jButton1)
+                                .addComponent(Enrollbutton)
                                 .addGap(18, 18, 18)
-                                .addComponent(jButton2)
+                                .addComponent(Dropbutton)
                                 .addGap(125, 125, 125))))))
         );
 
@@ -431,26 +435,10 @@ String syrlvl;
 
     private void subjTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_subjTableMouseClicked
        int selectedRow = subjTable.getSelectedRow();
-       
-       if (selectedRow < 0) return; 
 
-        stdid = (String) subjTable.getValueAt(selectedRow, 0);
-        studid.setText(stdid);
+   if (selectedRow < 0) return;
 
-        sname = (String) subjTable.getValueAt(selectedRow, 1);
-        studname.setText(sname);
-
-        sadd = (String) subjTable.getValueAt(selectedRow, 2);
-        studadd.setText(sadd);
-
-        scourse = (String) subjTable.getValueAt(selectedRow, 3);
-        studcrs.setText(scourse);
-
-        sgender = (String) subjTable.getValueAt(selectedRow, 4);
-        studgender.setText(sgender);
-        
-        syrlvl = (String) subjTable.getValueAt(selectedRow, 5);
-        yrlvl.setText(syrlvl);
+   selectedEnrolledSubjId = (String) subjTable.getValueAt(selectedRow, 0);
     }//GEN-LAST:event_subjTableMouseClicked
 
     private void editBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_editBtnMouseClicked
@@ -515,9 +503,73 @@ String syrlvl;
     syrlvl = (String) studTable.getValueAt(selectedRow, 5);
     yrlvl.setText(syrlvl);
 
+   selectedEnrolledSubjId = null;
     showEnrolledSubjects(Integer.parseInt(stdid));
 
     }//GEN-LAST:event_studTableMouseClicked
+
+    private void EnrollbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EnrollbuttonActionPerformed
+        // TODO add your handling code here:
+           if (stdid == null || stdid.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Select a student first.");
+        return;
+    }
+    if (SubjectsForm.selectedSubjId == null || SubjectsForm.selectedSubjId.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Open the Subjects window and select a subject first.");
+        return;
+    }
+
+    int confirm = javax.swing.JOptionPane.showConfirmDialog(
+        this,
+        "Enroll Student ID:" + stdid + " to Subject ID:" + SubjectsForm.selectedSubjId,
+        "Confirm Enrollment",
+        javax.swing.JOptionPane.OK_CANCEL_OPTION,
+        javax.swing.JOptionPane.QUESTION_MESSAGE
+    );
+    if (confirm != javax.swing.JOptionPane.OK_OPTION) {
+        return;
+    }
+
+    enrolled e = new enrolled();
+    boolean ok = e.enroll_subject(Integer.parseInt(stdid), Integer.parseInt(SubjectsForm.selectedSubjId));
+    if (!ok) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Student is already enrolled in that subject.");
+    }
+    showEnrolledSubjects(Integer.parseInt(stdid));
+    if (SubjectsForm.instance != null) {
+        SubjectsForm.instance.showClassList(Integer.parseInt(SubjectsForm.selectedSubjId));
+     }
+    }//GEN-LAST:event_EnrollbuttonActionPerformed
+
+    private void DropbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DropbuttonActionPerformed
+        // TODO add your handling code here:
+           if (stdid == null || stdid.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Select a student first.");
+        return;
+    }
+    if (selectedEnrolledSubjId == null || selectedEnrolledSubjId.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Select a subject from the Enrolled Subjects list first.");
+        return;
+    }
+
+    int confirm = javax.swing.JOptionPane.showConfirmDialog(
+        this,
+        "Drop Student ID:" + stdid + " from Subject ID:" + selectedEnrolledSubjId,
+        "Confirm Drop",
+        javax.swing.JOptionPane.OK_CANCEL_OPTION,
+        javax.swing.JOptionPane.QUESTION_MESSAGE
+    );
+    if (confirm != javax.swing.JOptionPane.OK_OPTION) {
+        return;
+    }
+
+    enrolled e = new enrolled();
+    e.drop_subject(Integer.parseInt(stdid), Integer.parseInt(selectedEnrolledSubjId));
+    showEnrolledSubjects(Integer.parseInt(stdid));
+    if (SubjectsForm.instance != null) {
+        SubjectsForm.instance.showClassList(Integer.parseInt(selectedEnrolledSubjId));
+     }
+    }//GEN-LAST:event_DropbuttonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -545,10 +597,10 @@ String syrlvl;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Dropbutton;
+    private javax.swing.JButton Enrollbutton;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JButton editBtn;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
