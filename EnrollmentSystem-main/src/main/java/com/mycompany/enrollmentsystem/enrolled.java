@@ -16,7 +16,7 @@ public class enrolled {
     public boolean enroll_subject(int studid, int subjid){
         EnrollmentSystem b = new EnrollmentSystem();
         b.DBConnect();
-        
+
         try{
             PreparedStatement chk = b.con.prepareStatement(
             "SELECT COUNT(*) FROM enroll WHERE studid = ? AND subjid = ?"
@@ -29,27 +29,27 @@ public class enrolled {
                 return false;
             }
             PreparedStatement ps = b.con.prepareStatement(
-            "INSERT INT enroll (studid, subjid) VALUES (?, ?)"
+            "INSERT INTO enroll (studid, subjid) VALUES (?, ?)"
             );
-            chk.setInt(1, studid);
-            chk.setInt(2, subjid);
+            ps.setInt(1, studid);
+            ps.setInt(2, subjid);
             int rows = ps.executeUpdate();
             if (rows > 0){
-                System.out.println("Student " + studid + "enrolled to "+ subjid);
+                System.out.println("Student " + studid + " enrolled to " + subjid);
                 return true;
             }
-            
+
         }catch(Exception e){
             System.out.println("Not Successful!");
             e.printStackTrace();
         }
         return false;
     }
-    
+
     public boolean drop_subject(int studid, int subjid){
         EnrollmentSystem b = new EnrollmentSystem();
         b.DBConnect();
-        
+
         try{
             PreparedStatement ps = b.con.prepareStatement(
             "DELETE FROM enroll WHERE studid = ? AND subjid = ?"
@@ -58,43 +58,42 @@ public class enrolled {
             ps.setInt(2, subjid);
             int rows = ps.executeUpdate();
             if (rows > 0){
-                System.out.println("Student " + studid + "dropped from "+ subjid);
+                System.out.println("Student " + studid + " dropped from " + subjid);
                 return true;
             }
-            
+
         }catch(Exception e){
             System.out.println("Not Successful!");
             e.printStackTrace();
         }
         return false;
     }
-    
-    public List<String[]> studentsOfSubject(int subjid) {
-        List<String[]> out = new ArrayList<>();
-        EnrollmentSystem b = new EnrollmentSystem();
-        b.DBConnect();
- 
-        String query = "SELECT st.studid, st.studname, st.studadd, st.studcrs, st.studgender, st.studyrlvl "
-                     + "FROM enroll e JOIN students st ON e.studid = st.studid "
-                     + "WHERE e.subjid = ?";
-        try {
-            PreparedStatement ps = b.con.prepareStatement(query);
-            ps.setInt(1, subjid);
-           ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                out.add(new String[]{
-                    rs.getString("studid"),
-                    rs.getString("studname"),
-                    rs.getString("studadd"),
-                    rs.getString("studcrs"),
-                    rs.getString("studgender"),
-                    rs.getString("studyrlvl")
-                });
-            }
-        } catch (Exception e) {
-            System.out.println("Not successful!");
-            e.printStackTrace();
+
+    public List<String[]> subjectsOfStudent(int studid) {
+    List<String[]> out = new ArrayList<>();
+    EnrollmentSystem b = new EnrollmentSystem();
+    b.DBConnect();
+
+    String query = "SELECT s.subjid, s.subjcode, s.subjdesc, s.subjunits, s.subjsched "
+                 + "FROM enroll e JOIN subjects s ON e.subjid = s.subjid "
+                 + "WHERE e.studid = ?";
+    try {
+        PreparedStatement ps = b.con.prepareStatement(query);
+        ps.setInt(1, studid);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            out.add(new String[]{
+                rs.getString("subjid"),
+                rs.getString("subjcode"),
+                rs.getString("subjdesc"),
+                rs.getString("subjunits"),
+                rs.getString("subjsched")
+            });
         }
-        return out;
+    } catch (Exception e) {
+        System.out.println("Not successful!");
+        e.printStackTrace();
     }
+    return out;
+}
 }

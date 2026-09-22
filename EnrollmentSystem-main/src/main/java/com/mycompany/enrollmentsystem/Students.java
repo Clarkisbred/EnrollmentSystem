@@ -4,32 +4,31 @@
  */
 package com.mycompany.enrollmentsystem;
 
-
-
-
 /**
  *
- * @author RyanP
+ * @author bhilario
  */
 
 public class Students {
- 
+
  public void newstudent(int studid, String studname, String studadd,
-                       String studcrs, String studgender, String studyrlvl) {
+                       String studcrs, String studgender, String yrlvl) {
 
     EnrollmentSystem b = new EnrollmentSystem();
     b.DBConnect();
 
     try {
-        String query = "INSERT INTO Students VALUES (" +
-                studid + ", '" +
-                studname + "', '" +
-                studadd + "', '" +
-                studcrs + "', '" +
-                studgender + "', '" +
-                studyrlvl + "')";
+        String query = "INSERT INTO students (studid, studname, studadd, studcrs, studgender, yrlvl) "
+                     + "VALUES (?, ?, ?, ?, ?, ?)";
+        java.sql.PreparedStatement ps = b.con.prepareStatement(query);
+        ps.setInt(1, studid);
+        ps.setString(2, studname);
+        ps.setString(3, studadd);
+        ps.setString(4, studcrs);
+        ps.setString(5, studgender);
+        ps.setString(6, yrlvl);
 
-        int rows = b.st.executeUpdate(query);
+        int rows = ps.executeUpdate();
 
         if (rows > 0) {
             System.out.println("Student inserted successfully!");
@@ -40,33 +39,38 @@ public class Students {
         ex.printStackTrace();
     }
 }
-    
+
     public void delete_student(int studid){
         EnrollmentSystem b = new EnrollmentSystem();
-    b.DBConnect();
-    String query = "delete from students where studid ="+ studid;
-    try {
-            int rows = b.st.executeUpdate(query);
+        b.DBConnect();
+        String query = "DELETE FROM students WHERE studid = ?";
+        try {
+            java.sql.PreparedStatement ps = b.con.prepareStatement(query);
+            ps.setInt(1, studid);
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                System.out.println("Student deleted successfully!");
+            }
         }
-    catch(Exception ex) {
-        System.out.println("Not successful!");
-        ex.printStackTrace();
+        catch(Exception ex) {
+            System.out.println("Not successful!");
+            ex.printStackTrace();
+        }
     }
-   
-    }
+
     public void edit_student(int studid, String studname, String studadd,
-                   String studcrs, String studgender, String studyrlvl){
+                   String studcrs, String studgender, String yrlvl){
     EnrollmentSystem b = new EnrollmentSystem();
     b.DBConnect();
     String query = "UPDATE students SET studname = ?, studadd = ?, studcrs = ?, "
-                 + "studgender = ?, studyrlvl = ? WHERE studid = ?";
+                 + "studgender = ?, yrlvl = ? WHERE studid = ?";
     try {
         java.sql.PreparedStatement ps = b.con.prepareStatement(query);
         ps.setString(1, studname);
         ps.setString(2, studadd);
         ps.setString(3, studcrs);
         ps.setString(4, studgender);
-        ps.setString(5, studyrlvl);
+        ps.setString(5, yrlvl);
         ps.setInt(6, studid);
         int rows = ps.executeUpdate();
         if (rows > 0) {

@@ -9,22 +9,22 @@ package com.mycompany.enrollmentsystem;
  * @author bhilario
  */
 public class Teachers {
-    public void newteacher(int teachid, String teachname, String teachadd,
-                            String teachdept, String teachcontact, String teachstatus) {
+    public void newteacher(int tid, String tname, String tadd,
+                            String tdept, String tcontact, String tstatus) {
 
         EnrollmentSystem b = new EnrollmentSystem();
         b.DBConnect();
 
-        String query = "INSERT INTO teachers (teachid, teachname, teachadd, teachdept, teachcontact, teachstatus) "
+        String query = "INSERT INTO teachers (tid, tname, tadd, tdept, tcontact, tstatus) "
                      + "VALUES (?, ?, ?, ?, ?, ?)";
         try {
             java.sql.PreparedStatement ps = b.con.prepareStatement(query);
-            ps.setInt(1, teachid);
-            ps.setString(2, teachname);
-            ps.setString(3, teachadd);
-            ps.setString(4, teachdept);
-            ps.setString(5, teachcontact);
-            ps.setString(6, teachstatus);
+            ps.setInt(1, tid);
+            ps.setString(2, tname);
+            ps.setString(3, tadd);
+            ps.setString(4, tdept);
+            ps.setString(5, tcontact);
+            ps.setString(6, tstatus);
             int rows = ps.executeUpdate();
             if (rows > 0) {
                 System.out.println("Teacher inserted successfully!");
@@ -35,14 +35,14 @@ public class Teachers {
         }
     }
 
-    public void delete_teacher(int teachid) {
+    public void delete_teacher(int tid) {
         EnrollmentSystem b = new EnrollmentSystem();
         b.DBConnect();
 
-        String query = "DELETE FROM teachers WHERE teachid = ?";
+        String query = "DELETE FROM teachers WHERE tid = ?";
         try {
             java.sql.PreparedStatement ps = b.con.prepareStatement(query);
-            ps.setInt(1, teachid);
+            ps.setInt(1, tid);
             ps.executeUpdate();
         } catch (Exception ex) {
             System.out.println("Not successful!");
@@ -50,21 +50,21 @@ public class Teachers {
         }
     }
 
-    public void edit_teacher(int teachid, String teachname, String teachadd,
-                              String teachdept, String teachcontact, String teachstatus) {
+    public void edit_teacher(int tid, String tname, String tadd,
+                              String tdept, String tcontact, String tstatus) {
         EnrollmentSystem b = new EnrollmentSystem();
         b.DBConnect();
 
-        String query = "UPDATE teachers SET teachname = ?, teachadd = ?, teachdept = ?, "
-                     + "teachcontact = ?, teachstatus = ? WHERE teachid = ?";
+        String query = "UPDATE teachers SET tname = ?, tadd = ?, tdept = ?, "
+                     + "tcontact = ?, tstatus = ? WHERE tid = ?";
         try {
             java.sql.PreparedStatement ps = b.con.prepareStatement(query);
-            ps.setString(1, teachname);
-            ps.setString(2, teachadd);
-            ps.setString(3, teachdept);
-            ps.setString(4, teachcontact);
-            ps.setString(5, teachstatus);
-            ps.setInt(6, teachid);
+            ps.setString(1, tname);
+            ps.setString(2, tadd);
+            ps.setString(3, tdept);
+            ps.setString(4, tcontact);
+            ps.setString(5, tstatus);
+            ps.setInt(6, tid);
             int rows = ps.executeUpdate();
             if (rows > 0) {
                 System.out.println("Teacher updated successfully!");
