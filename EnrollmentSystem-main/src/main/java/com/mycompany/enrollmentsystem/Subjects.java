@@ -3,35 +3,39 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.enrollmentsystem;
-
+import java.sql.*;
 /**
  *
  * @author bhilario
  */
 public class Subjects {
-    public void newsubject(int subjid, String subjcode, String subjdesc,
+    public int newsubject(String subjcode, String subjdesc,
                             String subjunits, String subjsched) {
-
+        int newId = -1;
         EnrollmentSystem b = new EnrollmentSystem();
         b.DBConnect();
 
-        String query = "INSERT INTO subjects (subjid, subjcode, subjdesc, subjunits, subjsched) "
-                     + "VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO subjects (subjcode, subjdesc, subjunits, subjsched) "
+                     + "VALUES (?, ?, ?, ?)";
         try {
-            java.sql.PreparedStatement ps = b.con.prepareStatement(query);
-            ps.setInt(1, subjid);
-            ps.setString(2, subjcode);
-            ps.setString(3, subjdesc);
-            ps.setString(4, subjunits);
-            ps.setString(5, subjsched);
+            java.sql.PreparedStatement ps = b.con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, subjcode);
+            ps.setString(2, subjdesc);
+            ps.setString(3, subjunits);
+            ps.setString(4, subjsched);
             int rows = ps.executeUpdate();
             if (rows > 0) {
+                ResultSet keys = ps.getGeneratedKeys();
+                if(keys.next()){
+                    newId = 1;
+                }
                 System.out.println("Subject inserted successfully!");
             }
         } catch (Exception ex) {
             System.out.println("Not successful!");
             ex.printStackTrace();
         }
+        return newId;
     }
 
     public void delete_subject(int subjid) {

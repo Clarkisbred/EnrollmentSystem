@@ -35,10 +35,12 @@ public class EnrollmentSystem {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
             con = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/enrollmentsystem?"
-                + "useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
-                + "&zeroDateTimeBehavior=CONVERT_TO_NULL",
-                "root","root"); //(db, user, pass)
+    "jdbc:mysql://localhost:3306/enrollmentsystem?"
+    + "useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+    + "&zeroDateTimeBehavior=CONVERT_TO_NULL",
+    "root",
+    "clarkson3?!"
+);
 
             st = con.createStatement();
 

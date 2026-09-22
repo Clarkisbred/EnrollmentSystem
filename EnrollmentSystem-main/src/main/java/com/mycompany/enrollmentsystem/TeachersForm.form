@@ -105,9 +105,9 @@
                       </Group>
                   </Group>
                   <Component id="jScrollPane4" min="-2" pref="440" max="-2" attributes="0"/>
-                  <Component id="assignlabelt" min="-2" pref="158" max="-2" attributes="0"/>
+                  <Component id="assignlabelt" alignment="0" min="-2" pref="144" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="40" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -351,6 +351,9 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Comic Sans MS" size="18" style="1"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="TEACHERS REGISTRATION SYSTEM"/>
       </Properties>
     </Component>
@@ -492,6 +495,9 @@
     </Component>
     <Component class="javax.swing.JLabel" name="assignlabelt">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Comic Sans MS" size="18" style="1"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Assign Subject"/>
       </Properties>
     </Component>

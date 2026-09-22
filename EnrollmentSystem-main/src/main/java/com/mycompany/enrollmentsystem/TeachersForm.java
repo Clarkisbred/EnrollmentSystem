@@ -76,6 +76,7 @@ private void clearFields() {
      */
     public TeachersForm() {
         initComponents();
+        teachid.setEditable(false);
     }
 
     /**
@@ -282,6 +283,7 @@ private void clearFields() {
                 .addContainerGap(7, Short.MAX_VALUE))
         );
 
+        jLabel1.setFont(new java.awt.Font("Comic Sans MS", 1, 18)); // NOI18N
         jLabel1.setText("TEACHERS REGISTRATION SYSTEM");
 
         assignTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -329,6 +331,7 @@ private void clearFields() {
         deletebutton.setText("Delete");
         deletebutton.addActionListener(this::deletebuttonActionPerformed);
 
+        assignlabelt.setFont(new java.awt.Font("Comic Sans MS", 1, 18)); // NOI18N
         assignlabelt.setText("Assign Subject");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -349,8 +352,8 @@ private void clearFields() {
                             .addComponent(Assignbutton)
                             .addComponent(deletebutton)))
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(assignlabelt, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(40, Short.MAX_VALUE))
+                    .addComponent(assignlabelt, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -445,14 +448,16 @@ private void clearFields() {
     private void saveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBtnActionPerformed
         Teachers c = new Teachers();
 
-        c.newteacher(
-            Integer.parseInt(teachid.getText()),
+        int newId = c.newteacher(
             teachname.getText(),
             teachadd.getText(),
             teachdept.getText(),
             teachcontact.getText(),
             teachstatus.getText()
         );
+        if (newId > 0){
+            teachid.setText(String.valueOf(newId));
+        }
         showRecords();
     }//GEN-LAST:event_saveBtnActionPerformed
 
