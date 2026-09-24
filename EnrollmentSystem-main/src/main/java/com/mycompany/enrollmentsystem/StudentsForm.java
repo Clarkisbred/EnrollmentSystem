@@ -471,9 +471,12 @@ String selectedEnrolledSubjId;
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
-        SubjectsForm sf = new SubjectsForm();
-        sf.setVisible(true);
-        sf.showRecords();
+         if (SubjectsForm.instance == null || !SubjectsForm.instance.isDisplayable()) {
+        SubjectsForm.instance = new SubjectsForm();
+    }
+    SubjectsForm.instance.setVisible(true);
+    SubjectsForm.instance.showRecords();
+    SubjectsForm.instance.toFront();
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void searchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchMouseClicked

@@ -39,7 +39,7 @@ public class EnrollmentSystem {
     + "useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
     + "&zeroDateTimeBehavior=CONVERT_TO_NULL",
     "root",
-    "clarkson3?!"
+    "root"
 );
 
             st = con.createStatement();

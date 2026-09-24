@@ -66,6 +66,7 @@ private void clearFields() {
     subjunits.setText("");
     subjsched.setText("");
 }
+
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(SubjectsForm.class.getName());
 
