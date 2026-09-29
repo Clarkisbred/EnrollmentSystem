@@ -81,6 +81,7 @@ String selectedEnrolledSubjId;
     public StudentsForm() {
         initComponents();
         studid.setEditable(false);
+        
 
     }
 
@@ -123,6 +124,10 @@ String selectedEnrolledSubjId;
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
+        databaseMenu = new javax.swing.JMenu();
+        create1stsem = new javax.swing.JMenuItem();
+        create2ndsem = new javax.swing.JMenuItem();
+        createSummer = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -329,6 +334,22 @@ String selectedEnrolledSubjId;
         jMenu1.add(jMenuItem2);
 
         jMenuBar1.add(jMenu1);
+
+        databaseMenu.setText("DataBase");
+
+        create1stsem.setText("1st Semester");
+        create1stsem.addActionListener(this::create1stsemActionPerformed);
+        databaseMenu.add(create1stsem);
+
+        create2ndsem.setText("2nd Semester");
+        create2ndsem.addActionListener(this::create2ndsemActionPerformed);
+        databaseMenu.add(create2ndsem);
+
+        createSummer.setText("Summer");
+        createSummer.addActionListener(this::createSummerActionPerformed);
+        databaseMenu.add(createSummer);
+
+        jMenuBar1.add(databaseMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -579,6 +600,21 @@ String selectedEnrolledSubjId;
      }
     }//GEN-LAST:event_DropbuttonActionPerformed
 
+    private void createSummerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createSummerActionPerformed
+        // TODO add your handling code here:
+        EnrollmentSystem.createSemesterDatabase("summer");
+    }//GEN-LAST:event_createSummerActionPerformed
+
+    private void create1stsemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_create1stsemActionPerformed
+        // TODO add your handling code here:
+        EnrollmentSystem.createSemesterDatabase("1stsem");
+    }//GEN-LAST:event_create1stsemActionPerformed
+
+    private void create2ndsemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_create2ndsemActionPerformed
+        // TODO add your handling code here:
+        EnrollmentSystem.createSemesterDatabase("2ndsem");
+    }//GEN-LAST:event_create2ndsemActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -607,6 +643,10 @@ String selectedEnrolledSubjId;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Dropbutton;
     private javax.swing.JButton Enrollbutton;
+    private javax.swing.JMenuItem create1stsem;
+    private javax.swing.JMenuItem create2ndsem;
+    private javax.swing.JMenuItem createSummer;
+    private javax.swing.JMenu databaseMenu;
     private javax.swing.JButton deleteBtn;
     private javax.swing.JButton editBtn;
     private javax.swing.JLabel jLabel1;
