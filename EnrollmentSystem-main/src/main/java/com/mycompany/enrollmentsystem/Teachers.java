@@ -29,6 +29,29 @@ public class Teachers {
                 ResultSet keys = ps.getGeneratedKeys();
                  if (keys.next()){
                      newId = keys.getInt(1);
+                     
+                     String cleanName = tname.replaceAll("\\s+", "").toLowerCase();
+                    String username = newId + cleanName; 
+                    String password = cleanName;         
+                    String dbName = EnrollmentSystem.db;
+                    if (dbName == null) dbName = "enrollmentsystem"; //ADDED
+
+                    try (Connection rootCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/?zeroDateTimeBehavior=CONVERT_TO_NULL", "root", "root");
+                         Statement rootSt = rootCon.createStatement()) {
+                        
+                        String query1 = "CREATE USER IF NOT EXISTS '" + username + "'@'localhost' IDENTIFIED BY '" + password + "'";
+                        
+                        String query2 = "GRANT SELECT, INSERT, UPDATE ON `" + dbName + "`.* TO '" + username + "'@'localhost'";
+                        
+                        rootSt.executeUpdate(query1);
+                        rootSt.executeUpdate(query2);
+                        rootSt.executeUpdate("FLUSH PRIVILEGES");
+
+                        System.out.println("Teacher inserted successfully!");
+                        System.out.println("User '" + username + "' created with SELECT, INSERT, and UPDATE access on database `" + dbName + "`.");
+                    } catch (SQLException rootEx) {
+                        System.err.println("Teacher added to table, but failed to create MySQL user account: " + rootEx.getMessage());
+                    }
                  }
                 System.out.println("Teacher inserted successfully!");
             }
@@ -47,7 +70,35 @@ public class Teachers {
         try {
             java.sql.PreparedStatement ps = b.con.prepareStatement(query);
             ps.setInt(1, tid);
+            String tname = ""; 
+            try (PreparedStatement nps = b.con.prepareStatement("SELECT tname FROM teachers WHERE tid = ?")) { nps.setInt(1, tid); ResultSet nrs = nps.executeQuery(); if (nrs.next()) tname = nrs.getString(1); } //ADDED
             ps.executeUpdate();
+            int rows = ps.getUpdateCount(); 
+            
+             if (rows > 0) {
+                System.out.println("Teacher deleted successfully from table!");
+                
+               
+                if (!tname.isEmpty()) {
+                    String cleanName = tname.replaceAll("\\s+", "").toLowerCase();
+                    String username = tid + cleanName;
+                    String dbName = EnrollmentSystem.db;
+                    if (dbName == null) dbName = "enrollmentsystem"; 
+                    
+                    try (Connection rootCon = DriverManager.getConnection("jdbc:mysql://localhost:3306/?zeroDateTimeBehavior=CONVERT_TO_NULL", "root", "root");
+                         Statement rootSt = rootCon.createStatement()) {
+                        
+                        String revokeQuery = "REVOKE ALL PRIVILEGES ON `" + dbName + "`.* FROM '" + username + "'@'localhost'";
+                        
+                        rootSt.executeUpdate(revokeQuery);
+                        rootSt.executeUpdate("FLUSH PRIVILEGES");
+                        
+                        System.out.println("Access revoked for user '" + username + "' on database `" + dbName + "`.");
+                    } catch (SQLException rootEx) {
+                        System.err.println("Teacher deleted from table, but failed to revoke privileges: " + rootEx.getMessage());
+                    }
+                }
+            }
         } catch (Exception ex) {
             System.out.println("Not successful!");
             ex.printStackTrace();

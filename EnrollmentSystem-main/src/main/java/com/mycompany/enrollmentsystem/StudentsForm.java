@@ -81,6 +81,14 @@ String selectedEnrolledSubjId;
     public StudentsForm() {
         initComponents();
         studid.setEditable(false);
+        if (EnrollmentSystem.userRole.equals("STUDENT")) { saveBtn.setEnabled(false); editBtn.setEnabled(false); deleteBtn.setEnabled(false); Enrollbutton.setEnabled(false); Dropbutton.setEnabled(false); databaseMenu.setEnabled(false); } 
+        if (EnrollmentSystem.userRole.equals("TEACHER")) { deleteBtn.setEnabled(false); } 
+        
+        if (EnrollmentSystem.userRole.equals("STUDENT")){
+            saveBtn.setEnabled(false);
+            editBtn.setEnabled(false);
+            deleteBtn.setEnabled(false);
+        }
         
 
     }

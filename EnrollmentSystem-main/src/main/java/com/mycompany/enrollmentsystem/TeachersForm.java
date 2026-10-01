@@ -77,6 +77,11 @@ private void clearFields() {
     public TeachersForm() {
         initComponents();
         teachid.setEditable(false);
+        if (EnrollmentSystem.userRole.equals("STUDENT")) { saveBtn.setEnabled(false); editBtn.setEnabled(false); deleteBtn.setEnabled(false); Assignbutton.setEnabled(false); deletebutton.setEnabled(false); } 
+        if (EnrollmentSystem.userRole.equals("TEACHER")) { deleteBtn.setEnabled(false); deletebutton.setEnabled(false); } 
+         if (EnrollmentSystem.userRole.equals("TEACHER")) {
+        deleteBtn.setEnabled(false);
+    }
     }
 
     /**

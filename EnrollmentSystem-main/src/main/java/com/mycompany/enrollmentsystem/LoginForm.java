@@ -5,6 +5,7 @@
 package com.mycompany.enrollmentsystem;
 
 import javax.swing.*;
+import java.sql.*;
 
 /**
  *
@@ -25,9 +26,51 @@ public class LoginForm extends javax.swing.JFrame {
      * Creates new form Login
      */
     public LoginForm() {
-        initComponents();
-        schoolyearbox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- Select Database --" }));
+    initComponents();
+
+    schoolyearbox.removeAllItems();
+    schoolyearbox.addItem("-- Select Database --");
+
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+
+        Connection con = DriverManager.getConnection(
+            "jdbc:mysql://localhost:3306/?useSSL=false"
+            + "&allowPublicKeyRetrieval=true"
+            + "&serverTimezone=UTC",
+            "root",
+            "root"
+        );
+
+        Statement st = con.createStatement();
+        ResultSet rs = st.executeQuery("SHOW DATABASES");
+
+        while (rs.next()) {
+
+            String dbname = rs.getString(1);
+
+            if (!dbname.equalsIgnoreCase("information_schema")
+                    && !dbname.equalsIgnoreCase("mysql")
+                    && !dbname.equalsIgnoreCase("performance_schema")
+                    && !dbname.equalsIgnoreCase("sys")) {
+
+                schoolyearbox.addItem(dbname);
+            }
+        }
+
+        rs.close();
+        st.close();
+        con.close();
+
+    } catch (Exception ex) {
+        System.out.println(
+            "Error loading databases: " + ex.getMessage()
+        );
     }
+    
+    schoolyearbox.removeAllItems();
+    schoolyearbox.addItem("-- Select Database --");
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -130,46 +173,126 @@ public class LoginForm extends javax.swing.JFrame {
 
     private void LoginbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginbuttonActionPerformed
         // TODO add your handling code here:
-         String user = usernamefield.getText().trim();
-        String pass = new String(passwordfield.getPassword()).trim();
-
-        if (user.equals("root") && pass.equals("root")) {
-            if (!b.DBConnect()) {
-                messagebox("Database connection failed. Check your MySQL connection settings.", "ERROR");   
-            } else {
-                try {
-                    schoolyearbox.removeAllItems();
-                    String query = "SHOW DATABASES;";
-                    b.rs = b.st.executeQuery(query);
-
-                    boolean foundDatabase = false;
-                    while (b.rs.next()) {
-                        String dbname = b.rs.getString("Database");
-
-                        if (!dbname.equalsIgnoreCase("information_schema") && 
-                            !dbname.equalsIgnoreCase("mysql") && 
-                            !dbname.equalsIgnoreCase("performance_schema") && 
-                            !dbname.equalsIgnoreCase("sys")) {
-
-                            schoolyearbox.addItem(dbname);
-                            foundDatabase = true;
-                        }
-                    }
-
-                    if (!foundDatabase) {
-                        messagebox("Connected to MySQL, but no application databases were found.", "Notice");
-                    } else {
-                        isLoggedIn = true;
-                        messagebox("Admin Login Successful! Select a database from the dropdown and click Submit.", "Success");
-                    }
-                } catch (Exception ex) {
-                    System.out.println("Cannot fetch databases: " + ex);
-                    messagebox("Error fetching databases: " + ex.getMessage(), "ERROR");
+          String user = usernamefield.getText().trim();
+    String pass = new String(passwordfield.getPassword()).trim();
+ 
+    // ADMIN LOGIN
+    if (user.equals("root") && pass.equals("root")) {
+        EnrollmentSystem.userRole = "ADMIN";
+ 
+        if (!b.DBConnect()) {
+            messagebox("Database connection failed.", "ERROR");
+            return;
+        }
+ 
+        try {
+            schoolyearbox.removeAllItems();
+ 
+            String query = "SHOW DATABASES";
+            b.rs = b.st.executeQuery(query);
+ 
+            boolean foundDatabase = false;
+ 
+            while (b.rs.next()) {
+                String dbname = b.rs.getString("Database");
+ 
+                if (!dbname.equalsIgnoreCase("information_schema") &&
+                    !dbname.equalsIgnoreCase("mysql") &&
+                    !dbname.equalsIgnoreCase("performance_schema") &&
+                    !dbname.equalsIgnoreCase("sys")) {
+ 
+                    schoolyearbox.addItem(dbname);
+                    foundDatabase = true;
                 }
             }
-        } else {
-            messagebox("Invalid Admin Username or Password", "ERROR");
+ 
+            if (!foundDatabase) {
+                messagebox(
+                    "Connected to MySQL, but no application databases were found.",
+                    "Notice"
+                );
+            } else {
+                isLoggedIn = true;
+ 
+                messagebox(
+                    "Admin Login Successful! Select a database and click Submit.",
+                    "Success"
+                );
+            }
+ 
+        } catch (Exception ex) {
+            messagebox(
+                "Error fetching databases: " + ex.getMessage(),
+                "ERROR"
+            );
         }
+ 
+    }
+ 
+    else {
+ 
+        Object selected = schoolyearbox.getSelectedItem();
+ 
+        if (selected == null ||
+            selected.toString().equals("-- Select Database --")) {
+ 
+            messagebox(
+                "Please select your school database first.",
+                "ERROR"
+            );
+            return;
+        }
+ 
+        String mydb = selected.toString();
+ 
+        try {
+ 
+            Class.forName("com.mysql.cj.jdbc.Driver");
+ 
+            String url =
+                "jdbc:mysql://localhost:3306/" + mydb +
+                "?useSSL=false" +
+                "&allowPublicKeyRetrieval=true" +
+                "&serverTimezone=UTC" +
+                "&zeroDateTimeBehavior=CONVERT_TO_NULL";
+ 
+ 
+            Connection studentCon =
+                DriverManager.getConnection(url, user, pass);
+            EnrollmentSystem.userRole = "STUDENT";
+            try (Statement tchk = studentCon.createStatement(); ResultSet trs = tchk.executeQuery("SELECT tid, tname FROM teachers")) { while (trs.next()) { if ((trs.getString(1) + trs.getString(2)).replaceAll("\\s+", "").equalsIgnoreCase(user)) EnrollmentSystem.userRole = "TEACHER"; } } catch (Exception roleEx) { roleEx.printStackTrace(); } //ADDED
+ 
+ 
+            studentCon.close();
+ 
+            b.currentDB(mydb);
+ 
+            messagebox(
+                "Student Login Successful!",
+                "Success"
+            );
+ 
+            StudentsForm sf = new StudentsForm();
+            sf.setVisible(true);
+            this.dispose();
+ 
+        } catch (SQLException ex) {
+ 
+            messagebox(
+                "Invalid student username or password.",
+                "ERROR"
+            );
+ 
+            System.out.println("Student login error: " + ex.getMessage());
+ 
+        } catch (Exception ex) {
+ 
+            messagebox(
+                "Login error: " + ex.getMessage(),
+                "ERROR"
+            );
+        }
+    }
     }//GEN-LAST:event_LoginbuttonActionPerformed
 
     private void usernamefieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernamefieldActionPerformed

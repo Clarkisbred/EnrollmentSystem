@@ -25,6 +25,7 @@ public class EnrollmentSystem {
 
     static ResultSet rs;
     static String db;
+    static String userRole = "";
 
     public void currentDB(String db){
         this.db = db;
@@ -138,6 +139,7 @@ public class EnrollmentSystem {
     "root"
 );
 
+            if (db != null && !db.isEmpty()) { con.close(); con = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + db + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL", "root", "root"); } //ADDED
             st = con.createStatement();
 
             System.out.println("Connected to database!");
@@ -163,11 +165,11 @@ public class EnrollmentSystem {
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement()) {
 
-            // Create database dynamically
+       
             String sql = "CREATE DATABASE IF NOT EXISTS " + dbName;
             stmt.executeUpdate(sql);
             
-            // Optional: Create required schema tables in the new DB
+          
             stmt.executeUpdate("USE " + dbName);
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS students ("
                     + "studid INT AUTO_INCREMENT PRIMARY KEY, "
@@ -176,6 +178,13 @@ public class EnrollmentSystem {
                     + "studcrs VARCHAR(50), "
                     + "studgender VARCHAR(10), "
                     + "yrlvl VARCHAR(10))");
+            stmt.executeUpdate("ALTER TABLE students AUTO_INCREMENT = 1000"); 
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS teachers (tid INT AUTO_INCREMENT PRIMARY KEY, tname VARCHAR(100), tadd VARCHAR(255), tdept VARCHAR(100), tcontact VARCHAR(50), tstatus VARCHAR(50))"); //ADDED
+            stmt.executeUpdate("ALTER TABLE teachers AUTO_INCREMENT = 3000"); 
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS subjects (subjid INT AUTO_INCREMENT PRIMARY KEY, subjcode VARCHAR(50), subjdesc VARCHAR(255), subjunits VARCHAR(20), subjsched VARCHAR(100))"); //ADDED
+            stmt.executeUpdate("ALTER TABLE subjects AUTO_INCREMENT = 2000"); 
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS enroll (eid INT AUTO_INCREMENT PRIMARY KEY, studid INT, subjid INT)"); 
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS assign (subjid INT, tid INT)"); 
 
             javax.swing.JOptionPane.showMessageDialog(null, "Database '" + dbName + "' created successfully!");
             return true;
