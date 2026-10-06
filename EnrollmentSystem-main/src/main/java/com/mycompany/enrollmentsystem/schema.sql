@@ -19,3 +19,13 @@ CREATE TABLE IF NOT EXISTS teachers (
     subject      VARCHAR(100),
     teachgender  VARCHAR(10)
 );
+
+-- Grant Teachers full rights EXCEPT DELETE on ALL databases
+CREATE USER IF NOT EXISTS 'teacher_user'@'localhost' IDENTIFIED BY 'teacher_password';
+GRANT SELECT, INSERT, UPDATE ON *.* TO 'teacher_user'@'localhost';
+
+-- Grant Students SELECT rights ONLY on ALL databases
+CREATE USER IF NOT EXISTS 'student_user'@'localhost' IDENTIFIED BY 'student_password';
+GRANT SELECT ON *.* TO 'student_user'@'localhost';
+
+FLUSH PRIVILEGES;

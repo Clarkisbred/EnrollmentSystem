@@ -18,6 +18,8 @@ import java.time.*;
 import javax.swing.*;
 
 public class EnrollmentSystem {
+    public static String currentUser = "";
+    public static boolean isAdmin = false;
 
     Connection con;
 
@@ -131,15 +133,18 @@ public class EnrollmentSystem {
 
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            con = DriverManager.getConnection(
-    "jdbc:mysql://localhost:3306/enrollmentsystem?"
-    + "useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
-    + "&zeroDateTimeBehavior=CONVERT_TO_NULL",
-    "root",
-    "root"
-);
+           // con = DriverManager.getConnection(
+   // "jdbc:mysql://localhost:3306/enrollmentsystem?"
+   // + "useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+   // + "&zeroDateTimeBehavior=CONVERT_TO_NULL",
+  //  "root",
+   // "root"
+//);
 
-            if (db != null && !db.isEmpty()) { con.close(); con = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + db + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL", "root", "root"); } //ADDED
+       //     if (db != null && !db.isEmpty()) { con.close(); con = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + db + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL", "root", "root"); }
+       String url = "jdbc:mysql://localhost:3306/" + (db != null && !db.isEmpty() ? db : "") 
+                    + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL"; // ADDED
+            con = DriverManager.getConnection(url, "root", "root");
             st = con.createStatement();
 
             System.out.println("Connected to database!");
@@ -160,7 +165,8 @@ public class EnrollmentSystem {
         int nextYear = currentYear + 1;
         String dbName = "enrollment_" + currentYear + "_" + nextYear + "_" + semesterSuffix;
 
-        String url = "jdbc:mysql://localhost:3306/?user=root&password=root"; // Update credentials if needed
+        String url = "jdbc:mysql://localhost:3306/?user=root&password=root";
+        url = url + "&useSSL=false&allowPublicKeyRetrieval=true"; 
 
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement()) {
@@ -195,5 +201,22 @@ public class EnrollmentSystem {
             return false;
         }
     }
+    
+   public static void grantUserADDED(String username, String password, String dbName, String privs) { 
+    try (Connection c = DriverManager.getConnection(
+            "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC", "root", "root"); 
+         Statement s = c.createStatement()) { 
+        
+        s.executeUpdate("CREATE USER IF NOT EXISTS '" + username + "'@'localhost' IDENTIFIED BY '" + password + "'"); 
+        s.executeUpdate("ALTER USER '" + username + "'@'localhost' IDENTIFIED BY '" + password + "'"); 
+        
+        s.executeUpdate("GRANT " + privs + " ON `" + dbName + "`.* TO '" + username + "'@'localhost'"); 
+        s.executeUpdate("FLUSH PRIVILEGES"); 
+        
+        System.out.println("User '" + username + "' granted " + privs + " on database `" + dbName + "`."); 
+    } catch (Exception ex) { 
+        System.err.println("grantUserADDED failed: " + ex.getMessage()); 
+    } 
+}
 
 }
