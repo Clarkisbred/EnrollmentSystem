@@ -12,6 +12,7 @@ package com.mycompany.enrollmentsystem;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
 import java.time.*;
@@ -19,6 +20,7 @@ import javax.swing.*;
 
 public class EnrollmentSystem {
     public static String currentUser = "";
+    public static String currentPassword = "";
     public static boolean isAdmin = false;
 
     Connection con;
@@ -127,38 +129,83 @@ public class EnrollmentSystem {
         });
     }
 
-    public boolean DBConnect(){
+    public boolean DBConnect() {
+    String targetDB = (db != null && !db.trim().isEmpty())
+            ? db.trim()
+            : "";
 
-       try{
+    String user = (currentUser != null && !currentUser.trim().isEmpty())
+            ? currentUser
+            : "root";
 
-            Class.forName("com.mysql.cj.jdbc.Driver");
+    String pass = (currentPassword != null)
+            ? currentPassword
+            : "root";
 
-           // con = DriverManager.getConnection(
-   // "jdbc:mysql://localhost:3306/enrollmentsystem?"
-   // + "useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
-   // + "&zeroDateTimeBehavior=CONVERT_TO_NULL",
-  //  "root",
-   // "root"
-//);
+    return DBConnect(user, pass, targetDB);
+}
 
-       //     if (db != null && !db.isEmpty()) { con.close(); con = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + db + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL", "root", "root"); }
-       String url = "jdbc:mysql://localhost:3306/" + (db != null && !db.isEmpty() ? db : "") 
-                    + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&zeroDateTimeBehavior=CONVERT_TO_NULL"; // ADDED
-            con = DriverManager.getConnection(url, "root", "root");
-            st = con.createStatement();
+public boolean DBConnect(String username, String password) {
+    String targetDB = (db != null && !db.trim().isEmpty()
+            && !db.equalsIgnoreCase("null"))
+            ? db.trim()
+            : "";
 
-            System.out.println("Connected to database!");
+    return DBConnect(username, password, targetDB);
+}
 
-        }catch (Exception ex) {
+public boolean DBConnect(String username, String password, String semesterDB) {
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
 
-            System.out.print(ex);
+        String dbName = (semesterDB != null
+                && !semesterDB.trim().isEmpty()
+                && !semesterDB.equalsIgnoreCase("null"))
+                ? semesterDB.trim()
+                : "";
 
-            System.out.println("Connection failed");
-            return false;
+        String url = "jdbc:mysql://localhost:3306/" + dbName
+                + "?useSSL=false"
+                + "&allowPublicKeyRetrieval=true"
+                + "&serverTimezone=UTC"
+                + "&zeroDateTimeBehavior=CONVERT_TO_NULL";
+
+        System.out.println("Connecting to: " + url);
+        System.out.println("Username: " + username);
+
+        con = DriverManager.getConnection(url, username, password);
+        st = con.createStatement();
+
+        currentUser = username;
+        currentPassword = password;
+
+        if (!dbName.isEmpty()) {
+            db = dbName;
+            String currentSemesterDB = dbName;
         }
-         return true;
 
+        System.out.println("Connected to database successfully!");
+
+        return true;
+
+    } catch (ClassNotFoundException ex) {
+        System.err.println("MySQL JDBC Driver not found!");
+        ex.printStackTrace();
+        return false;
+
+    } catch (SQLException ex) {
+        System.err.println("MySQL connection failed!");
+        System.err.println("Message: " + ex.getMessage());
+        System.err.println("SQL State: " + ex.getSQLState());
+        System.err.println("Error Code: " + ex.getErrorCode());
+        return false;
+
+    } catch (Exception ex) {
+        System.err.println("Connection failed!");
+        ex.printStackTrace();
+        return false;
     }
+}
     
     public static boolean createSemesterDatabase(String semesterSuffix) {
         int currentYear = LocalDate.now().getYear();

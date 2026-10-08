@@ -33,7 +33,7 @@ public class LoginForm extends javax.swing.JFrame {
     schoolyearbox.removeAllItems();
     schoolyearbox.addItem("-- Select Database --");
     
-    // Root can see all enrollment databases
+    
     if (user.equalsIgnoreCase("root")) {
         try (Connection c = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC", user, pass); 
@@ -42,7 +42,7 @@ public class LoginForm extends javax.swing.JFrame {
             
             while (r.next()) { 
                 String dbName = r.getString(1); 
-                if (dbName.startsWith("enrollment_")) {
+                if (dbName.startsWith("enrollment")) {
                     schoolyearbox.addItem(dbName);
                 }
             } 
@@ -52,7 +52,7 @@ public class LoginForm extends javax.swing.JFrame {
         return;
     }
 
-    // For Student / Teacher users: query databases to check if user exists in students or teachers table
+   
     try (Connection c = DriverManager.getConnection(
             "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC", "root", "root"); 
          Statement s = c.createStatement(); 
@@ -63,7 +63,7 @@ public class LoginForm extends javax.swing.JFrame {
             if (dbName.startsWith("enrollment_")) {
                 boolean isRegisteredInDb = false;
 
-                // Check if student exists in this database
+              
                 try (Statement dbStmt = c.createStatement();
                      ResultSet studRs = dbStmt.executeQuery("SELECT studid, studname FROM `" + dbName + "`.students")) {
                     while (studRs.next()) {
@@ -75,7 +75,7 @@ public class LoginForm extends javax.swing.JFrame {
                     }
                 } catch (Exception ignored) {}
 
-                // Check if teacher exists in this database
+              
                 if (!isRegisteredInDb) {
                     try (Statement dbStmt = c.createStatement();
                          ResultSet teachRs = dbStmt.executeQuery("SELECT tid, tname FROM `" + dbName + "`.teachers")) {
@@ -89,7 +89,7 @@ public class LoginForm extends javax.swing.JFrame {
                     } catch (Exception ignored) {}
                 }
 
-                // Only display database if user is enrolled/registered in it
+            
                 if (isRegisteredInDb) {
                     schoolyearbox.addItem(dbName);
                 }
@@ -238,6 +238,9 @@ public class LoginForm extends javax.swing.JFrame {
             loginUserADDED = user; 
             loginPassADDED = pass; 
             isLoggedIn = true; 
+            
+            EnrollmentSystem.currentUser = user;
+            EnrollmentSystem.currentPassword = pass;
             
           
             loadDatabasesForUser(user, pass); 

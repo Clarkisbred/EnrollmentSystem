@@ -75,6 +75,7 @@ private void clearFields() {
      */
     public SubjectsForm() {
         initComponents();
+        setTitle("Subjects Registration System: " + EnrollmentSystem.db);
         instance = this;
         subjid.setEditable(false);
         if (EnrollmentSystem.userRole.equals("STUDENT")) { saveBtn.setEnabled(false); editBtn.setEnabled(false); deleteBtn.setEnabled(false); }

@@ -19,6 +19,7 @@ String scourse;
 String sgender;
 String syrlvl;
 String selectedEnrolledSubjId;
+    private SubjectsForm parentForm;
 
     public void showRecords(){
     DefaultTableModel tblmodel = (DefaultTableModel) studTable.getModel();
@@ -78,8 +79,16 @@ String selectedEnrolledSubjId;
     /**
      * Creates new form StudentsForm
      */
+    public StudentsForm(SubjectsForm parentForm){
+            initComponents();
+            setTitle("Students Registration System: "+ EnrollmentSystem.db);
+            this.parentForm = parentForm;
+            showRecords();
+        }
+    
     public StudentsForm() {
         initComponents();
+        setTitle("Students Registration System: " + EnrollmentSystem.db);
         studid.setEditable(false);
         if (EnrollmentSystem.userRole.equals("STUDENT")) { saveBtn.setEnabled(false); editBtn.setEnabled(false); deleteBtn.setEnabled(false); Enrollbutton.setEnabled(false); Dropbutton.setEnabled(false); databaseMenu.setEnabled(false); } 
         if (EnrollmentSystem.userRole.equals("TEACHER")) { deleteBtn.setEnabled(false); } 
