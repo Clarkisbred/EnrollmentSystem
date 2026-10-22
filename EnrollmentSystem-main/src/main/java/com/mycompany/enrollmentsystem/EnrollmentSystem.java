@@ -22,6 +22,8 @@ public class EnrollmentSystem {
     public static String currentUser = "";
     public static String currentPassword = "";
     public static boolean isAdmin = false;
+    public static int currentTeacherId = -1;
+    public static String currentTeacherName = "";
 
     Connection con;
 
@@ -211,13 +213,13 @@ public boolean DBConnect(String username, String password, String semesterDB) {
         int currentYear = LocalDate.now().getYear();
         int nextYear = currentYear + 1;
         String dbName = "enrollment_" + currentYear + "_" + nextYear + "_" + semesterSuffix;
-
+ 
         String url = "jdbc:mysql://localhost:3306/?user=root&password=root";
         url = url + "&useSSL=false&allowPublicKeyRetrieval=true"; 
-
+ 
         try (Connection conn = DriverManager.getConnection(url);
              Statement stmt = conn.createStatement()) {
-
+ 
        
             String sql = "CREATE DATABASE IF NOT EXISTS " + dbName;
             stmt.executeUpdate(sql);
@@ -236,12 +238,33 @@ public boolean DBConnect(String username, String password, String semesterDB) {
             stmt.executeUpdate("ALTER TABLE teachers AUTO_INCREMENT = 3000"); 
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS subjects (subjid INT AUTO_INCREMENT PRIMARY KEY, subjcode VARCHAR(50), subjdesc VARCHAR(255), subjunits VARCHAR(20), subjsched VARCHAR(100))"); //ADDED
             stmt.executeUpdate("ALTER TABLE subjects AUTO_INCREMENT = 2000"); 
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS enroll (eid INT AUTO_INCREMENT PRIMARY KEY, studid INT, subjid INT)"); 
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS assign (subjid INT, tid INT)"); 
-
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS assign ("
+                    + "SubjID INT NOT NULL UNIQUE, "
+                    + "TID INT NOT NULL, "
+                    + "FOREIGN KEY (SubjID) REFERENCES subjects(subjid), "
+                    + "FOREIGN KEY (TID) REFERENCES teachers(tid))");
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS enroll ("
+                    + "eid INT NOT NULL AUTO_INCREMENT, "
+                    + "studid INT NULL DEFAULT NULL, "
+                    + "subjid INT NULL DEFAULT NULL, "
+                    + "evaluation VARCHAR(255) DEFAULT NULL, "
+                    + "PRIMARY KEY (eid), "
+                    + "UNIQUE (studid, subjid), "
+                    + "FOREIGN KEY (studid) REFERENCES students(studid), "
+                    + "FOREIGN KEY (subjid) REFERENCES subjects(subjid))");
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS grades ("
+                    + "gradeid INT NOT NULL AUTO_INCREMENT, "
+                    + "enroll_eid INT NOT NULL UNIQUE, "
+                    + "prelim VARCHAR(10) NULL DEFAULT NULL, "
+                    + "midterm VARCHAR(10) NULL DEFAULT NULL, "
+                    + "prefinal VARCHAR(10) NULL DEFAULT NULL, "
+                    + "final VARCHAR(10) NULL DEFAULT NULL, "
+                    + "PRIMARY KEY (gradeid), "
+                    + "FOREIGN KEY (enroll_eid) REFERENCES enroll(eid))");
+ 
             javax.swing.JOptionPane.showMessageDialog(null, "Database '" + dbName + "' created successfully!");
             return true;
-
+ 
         } catch (Exception e) {
             e.printStackTrace();
            JOptionPane.showMessageDialog(null, "Error creating database: " + e.getMessage());

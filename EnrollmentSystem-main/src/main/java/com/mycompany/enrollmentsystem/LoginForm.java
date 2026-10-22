@@ -180,23 +180,25 @@ public class LoginForm extends javax.swing.JFrame {
 
     private void submitbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitbuttonActionPerformed
         // TODO add your handling code here:
-        if (!isLoggedIn) {
+                if (!isLoggedIn) {
             messagebox("Access Denied: Please enter valid credentials and click Login first.", "ERROR");
             return;
         }
-
+ 
         Object selected = schoolyearbox.getSelectedItem();
         if (selected == null || selected.toString().equals("-- Select Database --")) {
             messagebox("Please select a valid database from the dropdown list.", "ERROR");
             return;
         }
-
+ 
         String mydb = selected.toString();
         b.currentDB(mydb);
-
+ 
         // ADDED: Role detector using database connection
         if (!loginUserADDED.equalsIgnoreCase("root")) { 
-            EnrollmentSystem.userRole = "STUDENT"; 
+            EnrollmentSystem.userRole = "STUDENT";
+            EnrollmentSystem.currentTeacherId = -1; // ADDED
+            EnrollmentSystem.currentTeacherName = ""; // ADDED
             try (Connection tc = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/" + mydb + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC", loginUserADDED, loginPassADDED); 
                  Statement ts = tc.createStatement(); 
@@ -204,7 +206,9 @@ public class LoginForm extends javax.swing.JFrame {
                 
                 while (tr.next()) { 
                     if ((tr.getString(1) + tr.getString(2)).replaceAll("\\s+", "").equalsIgnoreCase(loginUserADDED)) {
-                        EnrollmentSystem.userRole = "TEACHER"; 
+                        EnrollmentSystem.userRole = "TEACHER";
+                        EnrollmentSystem.currentTeacherId = tr.getInt(1); // ADDED
+                        EnrollmentSystem.currentTeacherName = tr.getString(2); // ADDED
                     }
                 }
             } catch (Exception e) { 
@@ -213,15 +217,23 @@ public class LoginForm extends javax.swing.JFrame {
         } else {
             EnrollmentSystem.userRole = "ADMIN";
         }
-
-        StudentsForm sf = new StudentsForm();
-        sf.setVisible(true);
+ 
+        // ADDED: teachers go to GradesForm, everyone else to StudentsForm
+        if (EnrollmentSystem.userRole.equals("TEACHER")) {
+            // Teachers go straight to the grading screen
+            GradesForm gf = new GradesForm();
+            gf.setLocationRelativeTo(null);
+            gf.setVisible(true);
+        } else {
+            StudentsForm sf = new StudentsForm();
+            sf.setVisible(true);
+        }
         this.dispose();
     }//GEN-LAST:event_submitbuttonActionPerformed
 
     private void LoginbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginbuttonActionPerformed
         // TODO add your handling code here:
-        String user = usernamefield.getText().trim();
+         String user = usernamefield.getText().trim();
         String pass = new String(passwordfield.getPassword()).trim();
         
        
@@ -230,7 +242,7 @@ public class LoginForm extends javax.swing.JFrame {
             return; 
         } 
         
-
+ 
        
         try (Connection uc = DriverManager.getConnection( 
                 "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC", user, pass)) { // ADDED
@@ -252,7 +264,6 @@ public class LoginForm extends javax.swing.JFrame {
             schoolyearbox.addItem("-- Select Database --");
             messagebox("Invalid username or password.", "ERROR");
         } 
-    
     }//GEN-LAST:event_LoginbuttonActionPerformed
 
     private void usernamefieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernamefieldActionPerformed
