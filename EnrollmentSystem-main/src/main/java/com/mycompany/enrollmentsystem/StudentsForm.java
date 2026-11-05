@@ -87,20 +87,26 @@ String selectedEnrolledSubjId;
         }
     
     public StudentsForm() {
-        initComponents();
-        setTitle("Students Registration System: " + EnrollmentSystem.db);
-        studid.setEditable(false);
-        if (EnrollmentSystem.userRole.equals("STUDENT")) { saveBtn.setEnabled(false); editBtn.setEnabled(false); deleteBtn.setEnabled(false); Enrollbutton.setEnabled(false); Dropbutton.setEnabled(false); databaseMenu.setEnabled(false); } 
-        if (EnrollmentSystem.userRole.equals("TEACHER")) { deleteBtn.setEnabled(false); } 
-        
-        if (EnrollmentSystem.userRole.equals("STUDENT")){
-            saveBtn.setEnabled(false);
-            editBtn.setEnabled(false);
-            deleteBtn.setEnabled(false);
-        }
-        
-
+    initComponents();
+    UIStyle.apply(this);
+    setTitle("Students Registration System: " + EnrollmentSystem.db);
+    studid.setEditable(false);
+ 
+    if (EnrollmentSystem.userRole.equals("STUDENT")) {
+        saveBtn.setEnabled(false);
+        editBtn.setEnabled(false);
+        deleteBtn.setEnabled(false);
+        Enrollbutton.setEnabled(false);
+        Dropbutton.setEnabled(false);
+        databaseMenu.setEnabled(false);
     }
+ 
+    if (EnrollmentSystem.userRole.equals("TEACHER")) {
+        deleteBtn.setEnabled(false);
+    }
+ 
+    showRecords();
+}
     
     private void setupTorButtonADDED() {
         TORbutton.addActionListener(evt -> {
@@ -166,6 +172,7 @@ String selectedEnrolledSubjId;
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        subjTable.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         subjTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
@@ -184,25 +191,42 @@ String selectedEnrolledSubjId;
         });
         jScrollPane2.setViewportView(subjTable);
 
-        jLabel1.setFont(new java.awt.Font("Comic Sans MS", 1, 18)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("JetBrainsMono NF", 1, 18)); // NOI18N
         jLabel1.setText("STUDENT REGISTRATION SYSTEM");
 
+        yrlvl.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel2.setText("ID");
 
+        jLabel3.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel3.setText("Name");
 
+        jLabel4.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel4.setText("Address");
 
+        jLabel5.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel5.setText("Course");
 
+        jLabel6.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel6.setText("Gender");
 
+        studid.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         studid.addActionListener(this::studidActionPerformed);
 
+        studname.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         studname.addActionListener(this::studnameActionPerformed);
 
+        studadd.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
+
+        studcrs.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
+
+        jLabel7.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel7.setText("Year Level");
 
+        studgender.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
+
+        search.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         search.setText("Search");
         search.setToolTipText("");
         search.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -225,22 +249,21 @@ String selectedEnrolledSubjId;
             }
         });
 
+        deleteBtn.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         deleteBtn.setText("Delete");
         deleteBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 deleteBtnMousePressed(evt);
             }
         });
+        deleteBtn.addActionListener(this::deleteBtnActionPerformed);
 
+        saveBtn.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         saveBtn.setText("Save");
         saveBtn.addActionListener(this::saveBtnActionPerformed);
 
+        editBtn.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         editBtn.setText("Edit");
-        editBtn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                editBtnMouseClicked(evt);
-            }
-        });
         editBtn.addActionListener(this::editBtnActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -331,6 +354,7 @@ String selectedEnrolledSubjId;
                 .addContainerGap(7, Short.MAX_VALUE))
         );
 
+        studTable.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         studTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
@@ -349,7 +373,7 @@ String selectedEnrolledSubjId;
         });
         jScrollPane3.setViewportView(studTable);
 
-        jLabel9.setFont(new java.awt.Font("Comic Sans MS", 0, 18)); // NOI18N
+        jLabel9.setFont(new java.awt.Font("JetBrainsMono NF", 0, 18)); // NOI18N
         jLabel9.setText("Enrolled Subjects");
 
         Enrollbutton.setText("Enroll");
@@ -407,7 +431,7 @@ String selectedEnrolledSubjId;
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(Enrollbutton)
@@ -503,10 +527,6 @@ String selectedEnrolledSubjId;
     }//GEN-LAST:event_studidActionPerformed
 
     private void deleteBtnMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteBtnMousePressed
-        Students b = new Students();
-        b.delete_student(Integer.parseInt(studid.getText()));
-        
-        showRecords();
 
     }//GEN-LAST:event_deleteBtnMousePressed
 
@@ -517,22 +537,6 @@ String selectedEnrolledSubjId;
 
    selectedEnrolledSubjId = (String) subjTable.getValueAt(selectedRow, 0);
     }//GEN-LAST:event_subjTableMouseClicked
-
-    private void editBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_editBtnMouseClicked
-        
-  Students c = new Students();
-  
-   c.edit_student(
-    Integer.parseInt(studid.getText()),
-    studname.getText(),
-    studadd.getText(),
-    studcrs.getText(),
-    studgender.getText(),
-    yrlvl.getText()
-    );
-   showRecords();
-             
-    }//GEN-LAST:event_editBtnMouseClicked
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
@@ -557,6 +561,24 @@ String selectedEnrolledSubjId;
 
     private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
         // TODO add your handling code here:
+        if (studid.getText().trim().isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Select a student first.");
+        return;
+    }
+
+    Students c = new Students();
+
+    c.edit_student(
+        Integer.parseInt(studid.getText()),
+        studname.getText(),
+        studadd.getText(),
+        studcrs.getText(),
+        studgender.getText(),
+        yrlvl.getText()
+    );
+
+    showRecords();
+    clearFields();
     }//GEN-LAST:event_editBtnActionPerformed
 
     private void studTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_studTableMouseClicked
@@ -680,6 +702,32 @@ String selectedEnrolledSubjId;
     }
     Reports.openTOR(torId);
     }//GEN-LAST:event_TORbuttonActionPerformed
+
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+        // TODO add your handling code here:
+        if (studid.getText().trim().isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Select a student first.");
+        return;
+    }
+
+    int confirm = javax.swing.JOptionPane.showConfirmDialog(
+        this,
+        "Are you sure you want to delete this student?",
+        "Confirm Delete",
+        javax.swing.JOptionPane.YES_NO_OPTION
+    );
+
+    if (confirm != javax.swing.JOptionPane.YES_OPTION) {
+        return;
+    }
+
+    Students b = new Students();
+    b.delete_student(Integer.parseInt(studid.getText().trim()));
+
+    clearFields();
+    stdid = null;
+    selectedEnrolledSubjId = null;
+    }//GEN-LAST:event_deleteBtnActionPerformed
 
     /**
      * @param args the command line arguments

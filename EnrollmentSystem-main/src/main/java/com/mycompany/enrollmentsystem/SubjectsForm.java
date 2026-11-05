@@ -4,6 +4,11 @@
  */
 package com.mycompany.enrollmentsystem;
 import javax.swing.table.DefaultTableModel;
+import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JButton;
+import javax.swing.Timer;
 
 /**
  *
@@ -75,6 +80,7 @@ private void clearFields() {
      */
     public SubjectsForm() {
         initComponents();
+        UIStyle.apply(this);
         setTitle("Subjects Registration System: " + EnrollmentSystem.db);
         instance = this;
         subjid.setEditable(false);
@@ -116,6 +122,7 @@ private void clearFields() {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        subjTable.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         subjTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
@@ -134,18 +141,31 @@ private void clearFields() {
         });
         jScrollPane2.setViewportView(subjTable);
 
+        jLabel2.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel2.setText("ID");
 
+        jLabel3.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel3.setText("Code");
 
+        jLabel5.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel5.setText("Units");
 
+        jLabel6.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel6.setText("Schedule");
 
+        subjid.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         subjid.addActionListener(this::subjidActionPerformed);
 
+        subjcode.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         subjcode.addActionListener(this::subjcodeActionPerformed);
 
+        subjdesc.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
+
+        subjunits.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
+
+        subjsched.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
+
+        search.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         search.setText("Search");
         search.setToolTipText("");
         search.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -168,6 +188,7 @@ private void clearFields() {
             }
         });
 
+        deleteBtn.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         deleteBtn.setText("Delete");
         deleteBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -175,9 +196,11 @@ private void clearFields() {
             }
         });
 
+        saveBtn.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         saveBtn.setText("Save");
         saveBtn.addActionListener(this::saveBtnActionPerformed);
 
+        editBtn.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         editBtn.setText("Edit");
         editBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -208,6 +231,7 @@ private void clearFields() {
                     .addComponent(editBtn)))
         );
 
+        jLabel7.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel7.setText("Description");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -269,9 +293,10 @@ private void clearFields() {
                 .addContainerGap(7, Short.MAX_VALUE))
         );
 
-        jLabel1.setFont(new java.awt.Font("Comic Sans MS", 1, 18)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("JetBrainsMono NF", 1, 18)); // NOI18N
         jLabel1.setText("Subjects Form");
 
+        classlistTable.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         classlistTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
@@ -290,7 +315,7 @@ private void clearFields() {
         });
         jScrollPane3.setViewportView(classlistTable);
 
-        classlabel.setFont(new java.awt.Font("Comic Sans MS", 1, 18)); // NOI18N
+        classlabel.setFont(new java.awt.Font("JetBrainsMono NF", 1, 18)); // NOI18N
         classlabel.setText("Class List");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -306,7 +331,7 @@ private void clearFields() {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(classlabel, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(classlabel))
                 .addContainerGap(12, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -318,7 +343,7 @@ private void clearFields() {
                 .addComponent(classlabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addContainerGap(33, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)

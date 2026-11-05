@@ -37,8 +37,10 @@ public class EnrollmentSystem {
         this.db = db;
     }
     
-   public String newdb(String term){
-        DBConnect();
+   public String newdb(String term) {
+    if (!DBConnect()) {
+        return null;
+    }
         int year = Calendar.getInstance().get(Calendar.YEAR);
         String schyear = "SY" + year + "_" + (year + 1);
             
@@ -117,19 +119,45 @@ public class EnrollmentSystem {
                             """;
             st.executeUpdate(query8);
           
-        } catch(Exception ex){
-            System.out.println(ex);
-        }
-        return term + "_" + schyear;
+        } catch (Exception ex) {
+    ex.printStackTrace();
+    return null;
+}
+
+return term + "_" + schyear;
     }
 
     public static void main(String[] args) {
-        java.awt.EventQueue.invokeLater(() -> {
-            LoginForm login = new LoginForm();
-            login.setLocationRelativeTo(null);
-            login.setVisible(true);
-        });
+    try {
+        // 1. accent color (must come BEFORE setup)
+        com.formdev.flatlaf.FlatLaf.setGlobalExtraDefaults(
+            java.util.Collections.singletonMap("@accentColor", "#4F46E5"));
+
+        // 2. turn FlatLaf on
+        com.formdev.flatlaf.FlatLightLaf.setup();
+
+        // 3. tweaks (must come AFTER setup)
+        javax.swing.UIManager.put("Button.arc", 12);
+        javax.swing.UIManager.put("Component.arc", 12);
+        javax.swing.UIManager.put("TextComponent.arc", 12);
+        javax.swing.UIManager.put("Table.showHorizontalLines", true);
+        javax.swing.UIManager.put("Table.showVerticalLines", false);
+        javax.swing.UIManager.put("Table.rowHeight", 28);
+        javax.swing.UIManager.put("Panel.background", java.awt.Color.decode("#FAFAFA"));
+        javax.swing.UIManager.put("Table.alternateRowColor", java.awt.Color.decode("#F9FAFB"));
+        javax.swing.UIManager.put("Button.font", new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 14));
+        javax.swing.UIManager.put("Label.font", new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 14));
+        javax.swing.UIManager.put("TextField.font", new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 14));
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+
+    java.awt.EventQueue.invokeLater(() -> {
+        LoginForm login = new LoginForm();
+        login.setLocationRelativeTo(null);
+        login.setVisible(true);
+    });
+}
 
     public boolean DBConnect() {
     String targetDB = (db != null && !db.trim().isEmpty())
@@ -140,9 +168,13 @@ public class EnrollmentSystem {
             ? currentUser
             : "root";
 
-    String pass = (currentPassword != null)
-            ? currentPassword
-            : "root";
+    String pass = currentPassword;
+
+    if (pass == null || pass.isEmpty()) {
+        JOptionPane.showMessageDialog(null,
+                "MySQL password is missing. Please log in again.");
+        return false;
+    }
 
     return DBConnect(user, pass, targetDB);
 }
@@ -214,10 +246,9 @@ public boolean DBConnect(String username, String password, String semesterDB) {
         int nextYear = currentYear + 1;
         String dbName = "enrollment_" + currentYear + "_" + nextYear + "_" + semesterSuffix;
  
-        String url = "jdbc:mysql://localhost:3306/?user=root&password=root";
-        url = url + "&useSSL=false&allowPublicKeyRetrieval=true"; 
+        String url = "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
  
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(url, "root", currentPassword);
              Statement stmt = conn.createStatement()) {
  
        
@@ -274,7 +305,8 @@ public boolean DBConnect(String username, String password, String semesterDB) {
     
    public static void grantUserADDED(String username, String password, String dbName, String privs) { 
     try (Connection c = DriverManager.getConnection(
-            "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC", "root", "root"); 
+            "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
+        "root", currentPassword);
          Statement s = c.createStatement()) { 
         
         s.executeUpdate("CREATE USER IF NOT EXISTS '" + username + "'@'localhost' IDENTIFIED BY '" + password + "'"); 

@@ -30,8 +30,8 @@ public class Reports {
     private static final String SCHOOL      = "University of BreDuck";
     private static final String OFFICE      = "Registrar's Office";
     private static final String PREPARED_BY = "PREPARED BY HILARIO, BRANDON  CLARK I.";
-    private static final String CHECKED_BY  = "CHECKED BY CASTRO, CHARLAINE CHOLEEN L.";
-    private static final String REGISTRAR   = "REGISTRAR SIGMA, DUCK";
+    private static final String CHECKED_BY  = "CHECKED BY THE NWORD";
+    private static final String REGISTRAR   = "SIGMA, DUCK";
     // --------------------
  
     private static final Font TITLE  = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD);
@@ -282,9 +282,9 @@ public class Reports {
             return null;
         }
         try {
-            String name = "", course = "", gender = "";
+            String name = "", course = "", year = "";
             try (PreparedStatement ps = b.con.prepareStatement(
-                    "SELECT studname, studcrs, studgender FROM students WHERE studid = ?")) {
+                    "SELECT studname, studcrs, yrlvl FROM students WHERE studid = ?")) {
                 ps.setInt(1, studid);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
@@ -293,58 +293,75 @@ public class Reports {
                     }
                     name = nz(rs.getString(1));
                     course = nz(rs.getString(2));
-                    gender = nz(rs.getString(3));
+                    year = nz(rs.getString(3));
                 }
             }
- 
+
             PdfWriter.getInstance(doc, new FileOutputStream(pdf));
             doc.open();
-            addHeader(doc, "Student Grade Report");
- 
+            addHeader(doc, "Student Grade Sheet");
+
+            // ---- student block: left = ID/Name/Year, right = School Year/Course ----
             PdfPTable info = new PdfPTable(new float[]{1f, 1f});
             info.setWidthPercentage(100f);
-            info.setSpacingAfter(8f);
+            info.setSpacingAfter(14f);
             cell(info, "Student ID: " + studid, BOLD, Element.ALIGN_LEFT, 1, Rectangle.NO_BORDER);
+            cell(info, "School Year: " + semesterLabelSafe(EnrollmentSystem.db), BOLD, Element.ALIGN_LEFT, 1, Rectangle.NO_BORDER);
             cell(info, "Student Name: " + name, BOLD, Element.ALIGN_LEFT, 1, Rectangle.NO_BORDER);
             cell(info, "Student Course: " + course, BOLD, Element.ALIGN_LEFT, 1, Rectangle.NO_BORDER);
-            cell(info, "Gender: " + gender, BOLD, Element.ALIGN_LEFT, 1, Rectangle.NO_BORDER);
+            cell(info, "Student Year: " + year, BOLD, Element.ALIGN_LEFT, 1, Rectangle.NO_BORDER);
+            cell(info, "", BOLD, Element.ALIGN_LEFT, 1, Rectangle.NO_BORDER);
             doc.add(info);
- 
-            PdfPTable t = new PdfPTable(new float[]{1.6f, 3.6f, 1f, 1.4f, 1.4f, 1.4f, 1.4f});
+
+            float[] widths = {1.2f, 1.6f, 1.2f, 1.2f, 1.2f, 1.2f};
+
+            // ---- header table (boxed) ----
+            PdfPTable th = new PdfPTable(widths);
+            th.setWidthPercentage(100f);
+            String[] heads = {"SubjID", "Subj Code", "Prelim", "Midterm", "Prefinal", "Final"};
+            for (String h : heads) cell(th, h, BOLD, Element.ALIGN_CENTER, 1, Rectangle.BOX);
+            th.setSpacingAfter(5f);
+            doc.add(th);
+
+            // ---- body table (every cell boxed, missing grades show "null") ----
+            PdfPTable t = new PdfPTable(widths);
             t.setWidthPercentage(100f);
-            t.setHeaderRows(2);
-            cell(t, semesterLabelSafe(EnrollmentSystem.db), BOLD, Element.ALIGN_LEFT, 7, Rectangle.NO_BORDER);
-            String[] heads = {"Code", "Descriptive Title", "Units", "Prelim", "Midterm", "Prefinal", "Final"};
-            for (String h : heads) cell(t, h, BOLD, Element.ALIGN_CENTER, 1, Rectangle.BOX);
- 
-            String sql = "SELECT s.subjcode, s.subjdesc, s.subjunits, g.prelim, g.midterm, g.prefinal, g.`final` "
+            String sql = "SELECT s.subjid, s.subjcode, g.prelim, g.midterm, g.prefinal, g.`final` "
                     + "FROM enroll e JOIN subjects s ON e.subjid = s.subjid "
-                    + "LEFT JOIN grades g ON g.enroll_eid = e.eid WHERE e.studid = ? ORDER BY s.subjcode";
+                    + "LEFT JOIN grades g ON g.enroll_eid = e.eid WHERE e.studid = ? ORDER BY s.subjid";
             int rows = 0;
             try (PreparedStatement ps = b.con.prepareStatement(sql)) {
                 ps.setInt(1, studid);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         rows++;
-                        for (int c = 1; c <= 7; c++) {
-                            String v = nz(rs.getString(c));
-                            if (c >= 4 && v.isEmpty()) v = "-";
-                            cell(t, v, NORMAL, c == 2 ? Element.ALIGN_LEFT : Element.ALIGN_CENTER, 1, Rectangle.NO_BORDER);
+                        for (int c = 1; c <= 6; c++) {
+                            String v = rs.getString(c);
+                            if (v == null || v.trim().isEmpty()) v = "null";
+                            cell(t, v.trim(), NORMAL, Element.ALIGN_CENTER, 1, Rectangle.BOX);
                         }
                     }
                 }
             }
-            if (rows == 0) cell(t, "No enrolled subjects.", NORMAL, Element.ALIGN_CENTER, 7, Rectangle.NO_BORDER);
+            if (rows == 0) cell(t, "No enrolled subjects.", NORMAL, Element.ALIGN_CENTER, 6, Rectangle.BOX);
             doc.add(t);
- 
+
             Paragraph count = new Paragraph("Number of Subjects Listed: " + rows, BOLD);
             count.setSpacingBefore(12f);
             doc.add(count);
-            doc.add(new Chunk(new LineSeparator(0.8f, 100f, BaseColor.BLACK, Element.ALIGN_CENTER, 2f)));
-            Paragraph note = new Paragraph("This is a student copy and is not an official transcript.", SMALL);
-            note.setSpacingBefore(6f);
-            doc.add(note);
- 
+
+            // ---- registrar signature, bottom right ----
+            PdfPTable sig = new PdfPTable(new float[]{2.2f, 1.2f});
+            sig.setWidthPercentage(100f);
+            sig.setSpacingBefore(110f);
+            PdfPCell blank = cellObj("", NORMAL, Element.ALIGN_LEFT, 1, Rectangle.NO_BORDER);
+            sig.addCell(blank);
+            PdfPCell line = cellObj("", NORMAL, Element.ALIGN_CENTER, 1, Rectangle.BOTTOM);
+            sig.addCell(line);
+            sig.addCell(cellObj("", NORMAL, Element.ALIGN_LEFT, 1, Rectangle.NO_BORDER));
+            sig.addCell(cellObj("Registrar", BOLD, Element.ALIGN_CENTER, 1, Rectangle.NO_BORDER));
+            doc.add(sig);
+
             doc.close();
             return pdf;
         } catch (Exception ex) {
@@ -356,7 +373,7 @@ public class Reports {
             try { if (b.con != null) b.con.close(); } catch (Exception ignored) {}
         }
     }
- 
+
     private static String semesterLabelSafe(String db) {
         return db == null ? "" : semesterLabel(db);
     }

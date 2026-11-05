@@ -12,6 +12,11 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane; 
 import javax.swing.ListSelectionModel; 
 import javax.swing.table.DefaultTableModel;
+import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JButton;
+import javax.swing.Timer;
 /**
  *
  * @author bhilario
@@ -30,12 +35,39 @@ public class GradesForm extends javax.swing.JFrame {
      */
     public GradesForm() {
         initComponents();
+        
         setTitle("Grades: " + EnrollmentSystem.currentTeacherName + " - " + EnrollmentSystem.db);
         setLocationRelativeTo(null);
         setupTables();
         setupGradeBoxes();
         showAssignedSubjects();
     }
+    
+    public class HoverFade {
+    public static void apply(JButton btn, Color normal, Color hover) {
+        btn.setBackground(normal);
+        final float[] t = {0f};
+        final boolean[] over = {false};
+        Timer timer = new Timer(12, null);
+        timer.addActionListener(e -> {
+            t[0] += over[0] ? 0.12f : -0.12f;
+            t[0] = Math.max(0f, Math.min(1f, t[0]));
+            btn.setBackground(blend(normal, hover, t[0]));
+            if (t[0] == 0f || t[0] == 1f) timer.stop();
+        });
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) { over[0] = true; timer.start(); }
+            public void mouseExited(MouseEvent e)  { over[0] = false; timer.start(); }
+        });
+    }
+
+    private static Color blend(Color a, Color b, float t) {
+        return new Color(
+            (int) (a.getRed()   + (b.getRed()   - a.getRed())   * t),
+            (int) (a.getGreen() + (b.getGreen() - a.getGreen()) * t),
+            (int) (a.getBlue()  + (b.getBlue()  - a.getBlue())  * t));
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.

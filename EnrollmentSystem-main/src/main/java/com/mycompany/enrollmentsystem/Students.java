@@ -54,27 +54,72 @@ public class Students {
 }
 
     public void delete_student(int studid) {
-        EnrollmentSystem b = new EnrollmentSystem();
-        b.DBConnect();
+    EnrollmentSystem b = new EnrollmentSystem();
 
-        String query = "DELETE FROM students WHERE studid = ?";
-        try {
-            try (PreparedStatement gADDED = b.con.prepareStatement("DELETE FROM grades WHERE enroll_eid IN (SELECT eid FROM enroll WHERE studid = ?)")) 
-            { gADDED.setInt(1, studid); gADDED.executeUpdate(); } catch (Exception ignoredADDED) {
-            }
-            try (PreparedStatement eADDED = b.con.prepareStatement("DELETE FROM enroll WHERE studid = ?")) { eADDED.setInt(1, studid); eADDED.executeUpdate(); }
-            PreparedStatement ps = b.con.prepareStatement(query);
+    if (!b.DBConnect()) {
+        System.out.println("Database connection failed.");
+        return;
+    }
+
+    try {
+        b.con.setAutoCommit(false);
+
+        // Delete grades belonging to this student's enrollments
+        String deleteGrades =
+            "DELETE FROM grades WHERE enroll_eid IN " +
+            "(SELECT eid FROM enroll WHERE studid = ?)";
+
+        try (PreparedStatement ps = b.con.prepareStatement(deleteGrades)) {
             ps.setInt(1, studid);
+            ps.executeUpdate();
+        }
+
+        // Delete the student's enrollments
+        String deleteEnrollments =
+            "DELETE FROM enroll WHERE studid = ?";
+
+        try (PreparedStatement ps = b.con.prepareStatement(deleteEnrollments)) {
+            ps.setInt(1, studid);
+            ps.executeUpdate();
+        }
+
+        // Delete the student
+        String deleteStudent =
+            "DELETE FROM students WHERE studid = ?";
+
+        try (PreparedStatement ps = b.con.prepareStatement(deleteStudent)) {
+            ps.setInt(1, studid);
+
             int rows = ps.executeUpdate();
 
             if (rows > 0) {
+                b.con.commit();
                 System.out.println("Student deleted successfully!");
+            } else {
+                b.con.rollback();
+                System.out.println("Student ID not found.");
             }
+        }
+
+    } catch (Exception ex) {
+        try {
+            b.con.rollback();
+        } catch (Exception rollbackEx) {
+            rollbackEx.printStackTrace();
+        }
+
+        System.out.println("Operation failed: " + ex.getMessage());
+        ex.printStackTrace();
+
+    } finally {
+        try {
+            b.con.setAutoCommit(true);
+            b.con.close();
         } catch (Exception ex) {
-            System.out.println("Operation failed: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
+}
 
     public void edit_student(int studid, String studname, String studadd,
                    String studcrs, String studgender, String yrlvl){

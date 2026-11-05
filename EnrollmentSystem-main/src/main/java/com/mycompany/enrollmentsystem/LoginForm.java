@@ -6,6 +6,11 @@ package com.mycompany.enrollmentsystem;
 
 import javax.swing.*;
 import java.sql.*;
+import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JButton;
+import javax.swing.Timer;
 
 /**
  *
@@ -25,79 +30,56 @@ public class LoginForm extends javax.swing.JFrame {
     
     public LoginForm() {
     initComponents();
-
+    UIStyle.apply(this);
     schoolyearbox.removeAllItems();
     schoolyearbox.addItem("-- Select Database --");
 }
     private void loadDatabasesForUser(String user, String pass) {
     schoolyearbox.removeAllItems();
     schoolyearbox.addItem("-- Select Database --");
-    
-    
-    if (user.equalsIgnoreCase("root")) {
-        try (Connection c = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC", user, pass); 
-             Statement s = c.createStatement(); 
-             ResultSet r = s.executeQuery("SHOW DATABASES")) {
-            
-            while (r.next()) { 
-                String dbName = r.getString(1); 
-                if (dbName.startsWith("enrollment")) {
-                    schoolyearbox.addItem(dbName);
-                }
-            } 
-        } catch (Exception ex) { 
-            System.out.println("Error loading databases for admin: " + ex.getMessage()); 
+ 
+    // Connect as the logged-in user. SHOW DATABASES only lists the
+    // databases this user has been granted access to (root sees all).
+    try (Connection c = DriverManager.getConnection(
+            "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
+            user, pass);
+         Statement s = c.createStatement();
+         ResultSet r = s.executeQuery("SHOW DATABASES")) {
+ 
+        while (r.next()) {
+            String dbName = r.getString(1);
+            if (dbName.startsWith("enrollment")) {
+                schoolyearbox.addItem(dbName);
+            }
         }
-        return;
+    } catch (Exception ex) {
+        System.out.println("Error loading databases for " + user + ": " + ex.getMessage());
+    }
+}
+    public class HoverFade {
+    public static void apply(JButton btn, Color normal, Color hover) {
+        btn.setBackground(normal);
+        final float[] t = {0f};
+        final boolean[] over = {false};
+        Timer timer = new Timer(12, null);
+        timer.addActionListener(e -> {
+            t[0] += over[0] ? 0.12f : -0.12f;
+            t[0] = Math.max(0f, Math.min(1f, t[0]));
+            btn.setBackground(blend(normal, hover, t[0]));
+            if (t[0] == 0f || t[0] == 1f) timer.stop();
+        });
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) { over[0] = true; timer.start(); }
+            public void mouseExited(MouseEvent e)  { over[0] = false; timer.start(); }
+        });
     }
 
-   
-    try (Connection c = DriverManager.getConnection(
-            "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC", "root", "root"); 
-         Statement s = c.createStatement(); 
-         ResultSet r = s.executeQuery("SHOW DATABASES")) {
-        
-        while (r.next()) { 
-            String dbName = r.getString(1); 
-            if (dbName.startsWith("enrollment_")) {
-                boolean isRegisteredInDb = false;
-
-              
-                try (Statement dbStmt = c.createStatement();
-                     ResultSet studRs = dbStmt.executeQuery("SELECT studid, studname FROM `" + dbName + "`.students")) {
-                    while (studRs.next()) {
-                        String studentAccount = studRs.getInt(1) + studRs.getString(2).replaceAll("\\s+", "").toLowerCase();
-                        if (studentAccount.equalsIgnoreCase(user)) {
-                            isRegisteredInDb = true;
-                            break;
-                        }
-                    }
-                } catch (Exception ignored) {}
-
-              
-                if (!isRegisteredInDb) {
-                    try (Statement dbStmt = c.createStatement();
-                         ResultSet teachRs = dbStmt.executeQuery("SELECT tid, tname FROM `" + dbName + "`.teachers")) {
-                        while (teachRs.next()) {
-                            String teacherAccount = teachRs.getInt(1) + teachRs.getString(2).replaceAll("\\s+", "").toLowerCase();
-                            if (teacherAccount.equalsIgnoreCase(user)) {
-                                isRegisteredInDb = true;
-                                break;
-                            }
-                        }
-                    } catch (Exception ignored) {}
-                }
-
-            
-                if (isRegisteredInDb) {
-                    schoolyearbox.addItem(dbName);
-                }
-            }
-        } 
-    } catch (Exception ex) { 
-        System.out.println("Error loading databases for user: " + ex.getMessage()); 
-    } 
+    private static Color blend(Color a, Color b, float t) {
+        return new Color(
+            (int) (a.getRed()   + (b.getRed()   - a.getRed())   * t),
+            (int) (a.getGreen() + (b.getGreen() - a.getGreen()) * t),
+            (int) (a.getBlue()  + (b.getBlue()  - a.getBlue())  * t));
+    }
 }
 
     /**
@@ -118,19 +100,24 @@ public class LoginForm extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("JetBrainsMono NF", 0, 18)); // NOI18N
         jLabel1.setText("User Login");
 
+        passwordfield.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         passwordfield.addActionListener(this::passwordfieldActionPerformed);
 
+        usernamefield.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         usernamefield.addActionListener(this::usernamefieldActionPerformed);
 
+        Loginbutton.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         Loginbutton.setText("Login");
         Loginbutton.addActionListener(this::LoginbuttonActionPerformed);
 
+        schoolyearbox.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         schoolyearbox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         schoolyearbox.addActionListener(this::schoolyearboxActionPerformed);
 
+        submitbutton.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         submitbutton.setText("Submit");
         submitbutton.addActionListener(this::submitbuttonActionPerformed);
 
@@ -153,16 +140,16 @@ public class LoginForm extends javax.swing.JFrame {
                         .addGap(212, 212, 212)
                         .addComponent(submitbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(224, 224, 224)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(217, 217, 217)
+                        .addComponent(jLabel1)))
                 .addContainerGap(182, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(51, 51, 51)
+                .addGap(50, 50, 50)
                 .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(51, 51, 51)
+                .addGap(52, 52, 52)
                 .addComponent(usernamefield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(passwordfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -212,19 +199,18 @@ public class LoginForm extends javax.swing.JFrame {
                     }
                 }
             } catch (Exception e) { 
-                // Default to STUDENT role if teacher check fails
+               
             } 
         } else {
             EnrollmentSystem.userRole = "ADMIN";
         }
  
-        // ADDED: teachers go to GradesForm, everyone else to StudentsForm
-        if (EnrollmentSystem.userRole.equals("STUDENT")) { //ADDED
-            Reports.openGradeReport(Reports.currentStudentId()); //ADDED
-            return; //ADDED
-        } //ADDED
+
+        if (EnrollmentSystem.userRole.equals("STUDENT")) {
+            Reports.openGradeReport(Reports.currentStudentId());
+            return;
+        }
         if (EnrollmentSystem.userRole.equals("TEACHER")) {
-            // Teachers go straight to the grading screen
             GradesForm gf = new GradesForm();
             gf.setLocationRelativeTo(null);
             gf.setVisible(true);

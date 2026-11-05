@@ -5,6 +5,7 @@
 package com.mycompany.enrollmentsystem;
 import javax.swing.table.DefaultTableModel;
 
+
 /**
  *
  * @author bhilario
@@ -76,6 +77,7 @@ private void clearFields() {
      */
     public TeachersForm() {
         initComponents();
+        UIStyle.apply(this);
         setTitle("Teachers Registration System: " + EnrollmentSystem.db);
         teachid.setEditable(false);
         if (EnrollmentSystem.userRole.equals("STUDENT")) { saveBtn.setEnabled(false); editBtn.setEnabled(false); deleteBtn.setEnabled(false); Assignbutton.setEnabled(false); deletebutton.setEnabled(false); } 
@@ -146,20 +148,36 @@ private void clearFields() {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        teachstatus.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel2.setText("Teacher ID");
 
+        jLabel3.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel3.setText("Name");
 
+        jLabel4.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel4.setText("Address");
 
+        jLabel5.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel5.setText("Department");
 
+        jLabel6.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel6.setText("Contact");
 
+        teachid.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         teachid.addActionListener(this::teachidActionPerformed);
 
+        teachname.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         teachname.addActionListener(this::teachnameActionPerformed);
 
+        teachadd.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
+
+        teachdept.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
+
+        teachcontact.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
+
+        search.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         search.setText("Search");
         search.setToolTipText("");
         search.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -182,6 +200,7 @@ private void clearFields() {
             }
         });
 
+        deleteBtn.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         deleteBtn.setText("Delete");
         deleteBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -189,9 +208,11 @@ private void clearFields() {
             }
         });
 
+        saveBtn.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         saveBtn.setText("Save");
         saveBtn.addActionListener(this::saveBtnActionPerformed);
 
+        editBtn.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         editBtn.setText("Edit");
         editBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -222,6 +243,7 @@ private void clearFields() {
                     .addComponent(editBtn)))
         );
 
+        jLabel7.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         jLabel7.setText("Status");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -289,9 +311,10 @@ private void clearFields() {
                 .addContainerGap(7, Short.MAX_VALUE))
         );
 
-        jLabel1.setFont(new java.awt.Font("Comic Sans MS", 1, 18)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("JetBrainsMono NF", 1, 18)); // NOI18N
         jLabel1.setText("TEACHERS REGISTRATION SYSTEM");
 
+        assignTable.setFont(new java.awt.Font("JetBrainsMono NF", 0, 10)); // NOI18N
         assignTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
@@ -310,6 +333,7 @@ private void clearFields() {
         });
         jScrollPane3.setViewportView(assignTable);
 
+        teachTable2.setFont(new java.awt.Font("JetBrainsMono NF", 0, 10)); // NOI18N
         teachTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
@@ -331,13 +355,15 @@ private void clearFields() {
             teachTable2.getColumnModel().getColumn(5).setHeaderValue("Status");
         }
 
+        Assignbutton.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         Assignbutton.setText("Assign");
         Assignbutton.addActionListener(this::AssignbuttonActionPerformed);
 
+        deletebutton.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         deletebutton.setText("Delete");
         deletebutton.addActionListener(this::deletebuttonActionPerformed);
 
-        assignlabelt.setFont(new java.awt.Font("Comic Sans MS", 1, 18)); // NOI18N
+        assignlabelt.setFont(new java.awt.Font("JetBrainsMono NF", 1, 18)); // NOI18N
         assignlabelt.setText("Assign Subject");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -358,7 +384,7 @@ private void clearFields() {
                             .addComponent(Assignbutton)
                             .addComponent(deletebutton)))
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(assignlabelt, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(assignlabelt, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -381,9 +407,9 @@ private void clearFields() {
                                 .addComponent(deletebutton)
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
                                 .addComponent(assignlabelt, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(15, 15, 15)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(38, 38, 38))))))
         );
