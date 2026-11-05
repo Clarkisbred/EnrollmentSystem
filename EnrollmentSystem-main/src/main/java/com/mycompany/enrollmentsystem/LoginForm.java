@@ -180,7 +180,7 @@ public class LoginForm extends javax.swing.JFrame {
 
     private void submitbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitbuttonActionPerformed
         // TODO add your handling code here:
-                if (!isLoggedIn) {
+         if (!isLoggedIn) {
             messagebox("Access Denied: Please enter valid credentials and click Login first.", "ERROR");
             return;
         }
@@ -219,6 +219,10 @@ public class LoginForm extends javax.swing.JFrame {
         }
  
         // ADDED: teachers go to GradesForm, everyone else to StudentsForm
+        if (EnrollmentSystem.userRole.equals("STUDENT")) { //ADDED
+            Reports.openGradeReport(Reports.currentStudentId()); //ADDED
+            return; //ADDED
+        } //ADDED
         if (EnrollmentSystem.userRole.equals("TEACHER")) {
             // Teachers go straight to the grading screen
             GradesForm gf = new GradesForm();

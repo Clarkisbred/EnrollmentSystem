@@ -101,6 +101,22 @@ String selectedEnrolledSubjId;
         
 
     }
+    
+    private void setupTorButtonADDED() {
+        TORbutton.addActionListener(evt -> {
+            int torId = -1;
+            if (EnrollmentSystem.userRole.equals("STUDENT")) {
+                torId = Reports.currentStudentId();
+            } else if (stdid != null && !stdid.trim().isEmpty()) {
+                torId = Integer.parseInt(stdid.trim());
+            }
+            if (torId < 0) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Select a student from the table first."); //ADDED
+                return;
+            }
+            Reports.openTOR(torId); 
+        }); 
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -137,6 +153,8 @@ String selectedEnrolledSubjId;
         jLabel9 = new javax.swing.JLabel();
         Enrollbutton = new javax.swing.JButton();
         Dropbutton = new javax.swing.JButton();
+        jLabel8 = new javax.swing.JLabel();
+        TORbutton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -167,7 +185,7 @@ String selectedEnrolledSubjId;
         jScrollPane2.setViewportView(subjTable);
 
         jLabel1.setFont(new java.awt.Font("Comic Sans MS", 1, 18)); // NOI18N
-        jLabel1.setText("STUDENT INFORMATION SYSTEM");
+        jLabel1.setText("STUDENT REGISTRATION SYSTEM");
 
         jLabel2.setText("ID");
 
@@ -340,6 +358,11 @@ String selectedEnrolledSubjId;
         Dropbutton.setText("Drop");
         Dropbutton.addActionListener(this::DropbuttonActionPerformed);
 
+        jLabel8.setText("Print");
+
+        TORbutton.setText("TOR");
+        TORbutton.addActionListener(this::TORbuttonActionPerformed);
+
         jMenu1.setText("Open");
 
         jMenuItem1.setText("Teachers");
@@ -389,7 +412,12 @@ String selectedEnrolledSubjId;
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(Enrollbutton)
                                     .addComponent(Dropbutton)))
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel8)
+                                    .addComponent(TORbutton)))))
                     .addComponent(jLabel1))
                 .addContainerGap(47, Short.MAX_VALUE))
         );
@@ -404,7 +432,13 @@ String selectedEnrolledSubjId;
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(99, 99, 99))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(jLabel8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(TORbutton)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel9)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -632,6 +666,21 @@ String selectedEnrolledSubjId;
         EnrollmentSystem.createSemesterDatabase("2ndsem");
     }//GEN-LAST:event_create2ndsemActionPerformed
 
+    private void TORbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TORbuttonActionPerformed
+        // TODO add your handling code here:
+        int torId = -1;
+    if (EnrollmentSystem.userRole.equals("STUDENT")) {
+        torId = Reports.currentStudentId(); 
+    } else if (stdid != null && !stdid.trim().isEmpty()) {
+        torId = Integer.parseInt(stdid.trim());
+    }
+    if (torId < 0) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Select a student from the table first."); //ADDED
+        return;
+    }
+    Reports.openTOR(torId);
+    }//GEN-LAST:event_TORbuttonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -660,6 +709,7 @@ String selectedEnrolledSubjId;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Dropbutton;
     private javax.swing.JButton Enrollbutton;
+    private javax.swing.JButton TORbutton;
     private javax.swing.JMenuItem create1stsem;
     private javax.swing.JMenuItem create2ndsem;
     private javax.swing.JMenuItem createSummer;
@@ -673,6 +723,7 @@ String selectedEnrolledSubjId;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;

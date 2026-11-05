@@ -38,7 +38,7 @@ public class Students {
                     String password = cleanName; 
                     String dbName = EnrollmentSystem.db;
                     if (dbName == null || dbName.isEmpty()) {
-                        dbName = "enrollment_2026_2027_1stsem"; // Default fallback
+                        dbName = "enrollment_2026_2027_1stsem";
                         }
                     
                     
@@ -59,6 +59,10 @@ public class Students {
 
         String query = "DELETE FROM students WHERE studid = ?";
         try {
+            try (PreparedStatement gADDED = b.con.prepareStatement("DELETE FROM grades WHERE enroll_eid IN (SELECT eid FROM enroll WHERE studid = ?)")) 
+            { gADDED.setInt(1, studid); gADDED.executeUpdate(); } catch (Exception ignoredADDED) {
+            }
+            try (PreparedStatement eADDED = b.con.prepareStatement("DELETE FROM enroll WHERE studid = ?")) { eADDED.setInt(1, studid); eADDED.executeUpdate(); }
             PreparedStatement ps = b.con.prepareStatement(query);
             ps.setInt(1, studid);
             int rows = ps.executeUpdate();
