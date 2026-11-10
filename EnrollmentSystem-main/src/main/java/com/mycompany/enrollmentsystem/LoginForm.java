@@ -30,6 +30,10 @@ public class LoginForm extends javax.swing.JFrame {
     
     public LoginForm() {
     initComponents();
+    setPreferredSize(new java.awt.Dimension(555, 470));
+    pack();
+    setResizable(false);
+    setLocationRelativeTo(null);
     UIStyle.apply(this);
     schoolyearbox.removeAllItems();
     schoolyearbox.addItem("-- Select Database --");
@@ -38,8 +42,7 @@ public class LoginForm extends javax.swing.JFrame {
     schoolyearbox.removeAllItems();
     schoolyearbox.addItem("-- Select Database --");
  
-    // Connect as the logged-in user. SHOW DATABASES only lists the
-    // databases this user has been granted access to (root sees all).
+
     try (Connection c = DriverManager.getConnection(
             "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
             user, pass);
@@ -97,70 +100,44 @@ public class LoginForm extends javax.swing.JFrame {
         Loginbutton = new javax.swing.JButton();
         schoolyearbox = new javax.swing.JComboBox<>();
         submitbutton = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("JetBrainsMono NF", 0, 18)); // NOI18N
         jLabel1.setText("User Login");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(222, 50, -1, -1));
 
         passwordfield.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         passwordfield.addActionListener(this::passwordfieldActionPerformed);
+        getContentPane().add(passwordfield, new org.netbeans.lib.awtextra.AbsoluteConstraints(182, 188, 180, 30));
 
         usernamefield.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         usernamefield.addActionListener(this::usernamefieldActionPerformed);
+        getContentPane().add(usernamefield, new org.netbeans.lib.awtextra.AbsoluteConstraints(182, 126, 180, 30));
 
         Loginbutton.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         Loginbutton.setText("Login");
         Loginbutton.addActionListener(this::LoginbuttonActionPerformed);
+        getContentPane().add(Loginbutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(182, 230, 180, 35));
 
         schoolyearbox.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         schoolyearbox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         schoolyearbox.addActionListener(this::schoolyearboxActionPerformed);
+        getContentPane().add(schoolyearbox, new org.netbeans.lib.awtextra.AbsoluteConstraints(182, 283, 180, 35));
 
         submitbutton.setFont(new java.awt.Font("JetBrainsMono NF", 0, 12)); // NOI18N
         submitbutton.setText("Submit");
         submitbutton.addActionListener(this::submitbuttonActionPerformed);
+        getContentPane().add(submitbutton, new org.netbeans.lib.awtextra.AbsoluteConstraints(182, 336, 180, 35));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(182, 182, 182)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(passwordfield)
-                            .addComponent(usernamefield, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
-                            .addComponent(schoolyearbox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(28, 28, 28)
-                                .addComponent(Loginbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(212, 212, 212)
-                        .addComponent(submitbutton, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(217, 217, 217)
-                        .addComponent(jLabel1)))
-                .addContainerGap(182, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(50, 50, 50)
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(52, 52, 52)
-                .addComponent(usernamefield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(passwordfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(Loginbutton)
-                .addGap(37, 37, 37)
-                .addComponent(schoolyearbox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(submitbutton)
-                .addGap(115, 115, 115))
-        );
+        jLabel2.setText("Username");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(182, 104, -1, -1));
+
+        jLabel3.setText("Password");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(182, 166, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -297,6 +274,8 @@ public class LoginForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Loginbutton;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPasswordField passwordfield;
     private javax.swing.JComboBox<String> schoolyearbox;
     private javax.swing.JButton submitbutton;

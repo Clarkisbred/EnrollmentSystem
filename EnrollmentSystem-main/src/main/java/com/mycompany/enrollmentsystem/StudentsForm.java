@@ -612,7 +612,7 @@ String selectedEnrolledSubjId;
 
     private void EnrollbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EnrollbuttonActionPerformed
         // TODO add your handling code here:
-           if (stdid == null || stdid.isEmpty()) {
+          if (stdid == null || stdid.isEmpty()) {
         javax.swing.JOptionPane.showMessageDialog(this, "Select a student first.");
         return;
     }
@@ -632,15 +632,26 @@ String selectedEnrolledSubjId;
         return;
     }
 
+    String clashMsg = new EnrollmentSystem().checkConflictADDED(Integer.parseInt(stdid), Integer.parseInt(SubjectsForm.selectedSubjId));
+    if (clashMsg != null) {
+        javax.swing.JOptionPane.showMessageDialog(this, clashMsg, "enroll", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        return;
+    }
+
     enrolled e = new enrolled();
     boolean ok = e.enroll_subject(Integer.parseInt(stdid), Integer.parseInt(SubjectsForm.selectedSubjId));
     if (!ok) {
         javax.swing.JOptionPane.showMessageDialog(this, "Student is already enrolled in that subject.");
     }
+    if (ok) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Enrolled", "enroll", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+    }
     showEnrolledSubjects(Integer.parseInt(stdid));
     if (SubjectsForm.instance != null) {
         SubjectsForm.instance.showClassList(Integer.parseInt(SubjectsForm.selectedSubjId));
      }
+    
+    
     }//GEN-LAST:event_EnrollbuttonActionPerformed
 
     private void DropbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DropbuttonActionPerformed

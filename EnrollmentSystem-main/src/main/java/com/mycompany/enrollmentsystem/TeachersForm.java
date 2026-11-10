@@ -379,13 +379,13 @@ private void clearFields() {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(Assignbutton)
                             .addComponent(deletebutton)))
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(assignlabelt, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -396,22 +396,19 @@ private void clearFields() {
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(assignlabelt, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(78, 78, 78)
                                 .addComponent(Assignbutton)
                                 .addGap(18, 18, 18)
-                                .addComponent(deletebutton)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(assignlabelt, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(38, 38, 38))))))
+                                .addComponent(deletebutton)))
+                        .addGap(38, 38, 38))))
         );
 
         pack();
@@ -553,7 +550,7 @@ private void clearFields() {
 
     private void AssignbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AssignbuttonActionPerformed
         // TODO add your handling code here:
-        if (tid == null || tid.isEmpty()) {
+            if (tid == null || tid.isEmpty()) {
         javax.swing.JOptionPane.showMessageDialog(this, "Select a teacher first.");
         return;
     }
@@ -573,10 +570,19 @@ private void clearFields() {
         return;
     }
 
+    String clashMsg = new EnrollmentSystem().checkTeacherConflictADDED(Integer.parseInt(tid), Integer.parseInt(SubjectsForm.selectedSubjId));
+    if (clashMsg != null) {
+        javax.swing.JOptionPane.showMessageDialog(this, clashMsg, "assign", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        return;
+    }
+
     Assign a = new Assign();
     boolean ok = a.assign_subject(Integer.parseInt(SubjectsForm.selectedSubjId), Integer.parseInt(tid));
     if (!ok) {
         javax.swing.JOptionPane.showMessageDialog(this, "That subject is already assigned to this teacher.");
+    }
+    if (ok) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Assigned", "assign", javax.swing.JOptionPane.INFORMATION_MESSAGE);
     }
     showAssignedSubjects(Integer.parseInt(tid));
     }//GEN-LAST:event_AssignbuttonActionPerformed

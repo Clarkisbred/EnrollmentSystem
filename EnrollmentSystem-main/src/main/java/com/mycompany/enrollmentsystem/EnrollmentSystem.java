@@ -9,11 +9,13 @@ package com.mycompany.enrollmentsystem;
  * @author bhilario
  */
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Calendar;
 import java.time.*;
 import javax.swing.*;
@@ -242,6 +244,7 @@ public boolean DBConnect(String username, String password, String semesterDB) {
 }
     
     public static boolean createSemesterDatabase(String semesterSuffix) {
+        
         int currentYear = LocalDate.now().getYear();
         int nextYear = currentYear + 1;
         String dbName = "enrollment_" + currentYear + "_" + nextYear + "_" + semesterSuffix;
@@ -250,6 +253,7 @@ public boolean DBConnect(String username, String password, String semesterDB) {
  
         try (Connection conn = DriverManager.getConnection(url, "root", currentPassword);
              Statement stmt = conn.createStatement()) {
+            
  
        
             String sql = "CREATE DATABASE IF NOT EXISTS " + dbName;
@@ -292,9 +296,11 @@ public boolean DBConnect(String username, String password, String semesterDB) {
                     + "final VARCHAR(10) NULL DEFAULT NULL, "
                     + "PRIMARY KEY (gradeid), "
                     + "FOREIGN KEY (enroll_eid) REFERENCES enroll(eid))");
+            new EnrollmentSystem().createConflictProc(stmt);
  
             javax.swing.JOptionPane.showMessageDialog(null, "Database '" + dbName + "' created successfully!");
             return true;
+            
  
         } catch (Exception e) {
             e.printStackTrace();
@@ -319,6 +325,110 @@ public boolean DBConnect(String username, String password, String semesterDB) {
     } catch (Exception ex) { 
         System.err.println("grantUserADDED failed: " + ex.getMessage()); 
     } 
+}
+   public void createConflictProc(Statement s) throws SQLException {
+    s.executeUpdate("DROP PROCEDURE IF EXISTS routine1");
+    s.executeUpdate("""
+        CREATE PROCEDURE routine1 (IN sid INT, IN subid INT, OUT message VARCHAR(100))
+        BEGIN
+            DECLARE nd VARCHAR(10);
+            DECLARE ns TIME;
+            DECLARE ne TIME;
+            SET message = 'OK';
+            SELECT REPLACE(UPPER(SUBSTRING_INDEX(subjsched, ' ', 1)), 'TH', 'R'),
+                   CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(subjsched, ' ', -1), '-', 1) AS TIME),
+                   CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(subjsched, ' ', -1), '-', -1) AS TIME)
+            INTO nd, ns, ne
+            FROM subjects WHERE subjid = subid;
+            SELECT CONCAT('Conflict with ', x.subjsched) INTO message
+            FROM (SELECT s.subjsched,
+                         REPLACE(UPPER(SUBSTRING_INDEX(s.subjsched, ' ', 1)), 'TH', 'R') AS d,
+                         CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(s.subjsched, ' ', -1), '-', 1) AS TIME) AS t1,
+                         CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(s.subjsched, ' ', -1), '-', -1) AS TIME) AS t2
+                  FROM enroll e JOIN subjects s ON e.subjid = s.subjid
+                  WHERE e.studid = sid AND e.subjid <> subid) x
+            WHERE ns < x.t2 AND x.t1 < ne
+              AND ((LOCATE('M', nd) > 0 AND LOCATE('M', x.d) > 0)
+                OR (LOCATE('T', nd) > 0 AND LOCATE('T', x.d) > 0)
+                OR (LOCATE('W', nd) > 0 AND LOCATE('W', x.d) > 0)
+                OR (LOCATE('R', nd) > 0 AND LOCATE('R', x.d) > 0)
+                OR (LOCATE('F', nd) > 0 AND LOCATE('F', x.d) > 0)
+                OR (LOCATE('S', nd) > 0 AND LOCATE('S', x.d) > 0))
+            LIMIT 1;
+        END
+        """);
+    
+}
+   public String checkConflictADDED(int studid, int subjid) {
+    EnrollmentSystem b = new EnrollmentSystem();
+    b.DBConnect();
+    try {
+        b.createConflictProc(b.st);
+        CallableStatement cs = b.con.prepareCall("{call routine1(?, ?, ?)}");
+        cs.setInt(1, studid);
+        cs.setInt(2, subjid);
+        cs.registerOutParameter(3, Types.VARCHAR);
+        cs.execute();
+        String msg = cs.getString(3);
+        if (msg != null && msg.startsWith("Conflict")) {
+            return msg;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+   public void createTeacherConflictProc(Statement s) throws SQLException {
+    s.executeUpdate("DROP PROCEDURE IF EXISTS routine2");
+    s.executeUpdate("""
+        CREATE PROCEDURE routine2 (IN tid_in INT, IN subid INT, OUT message VARCHAR(100))
+        BEGIN
+            DECLARE nd VARCHAR(10);
+            DECLARE ns TIME;
+            DECLARE ne TIME;
+            SET message = 'OK';
+            SELECT REPLACE(UPPER(SUBSTRING_INDEX(subjsched, ' ', 1)), 'TH', 'R'),
+                   CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(subjsched, ' ', -1), '-', 1) AS TIME),
+                   CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(subjsched, ' ', -1), '-', -1) AS TIME)
+            INTO nd, ns, ne
+            FROM subjects WHERE subjid = subid;
+            SELECT CONCAT('Conflict with ', x.subjsched) INTO message
+            FROM (SELECT s.subjsched,
+                         REPLACE(UPPER(SUBSTRING_INDEX(s.subjsched, ' ', 1)), 'TH', 'R') AS d,
+                         CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(s.subjsched, ' ', -1), '-', 1) AS TIME) AS t1,
+                         CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(s.subjsched, ' ', -1), '-', -1) AS TIME) AS t2
+                  FROM assign a JOIN subjects s ON a.subjid = s.subjid
+                  WHERE a.tid = tid_in AND a.subjid <> subid) x
+            WHERE ns < x.t2 AND x.t1 < ne
+              AND ((LOCATE('M', nd) > 0 AND LOCATE('M', x.d) > 0)
+                OR (LOCATE('T', nd) > 0 AND LOCATE('T', x.d) > 0)
+                OR (LOCATE('W', nd) > 0 AND LOCATE('W', x.d) > 0)
+                OR (LOCATE('R', nd) > 0 AND LOCATE('R', x.d) > 0)
+                OR (LOCATE('F', nd) > 0 AND LOCATE('F', x.d) > 0)
+                OR (LOCATE('S', nd) > 0 AND LOCATE('S', x.d) > 0))
+            LIMIT 1;
+        END
+        """);
+}
+
+public String checkTeacherConflictADDED(int tid, int subjid) {
+    EnrollmentSystem b = new EnrollmentSystem();
+    b.DBConnect();
+    try {
+        b.createTeacherConflictProc(b.st);
+        CallableStatement cs = b.con.prepareCall("{call routine2(?, ?, ?)}");
+        cs.setInt(1, tid);
+        cs.setInt(2, subjid);
+        cs.registerOutParameter(3, Types.VARCHAR);
+        cs.execute();
+        String msg = cs.getString(3);
+        if (msg != null && msg.startsWith("Conflict")) {
+            return msg;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
 }
 
 }
